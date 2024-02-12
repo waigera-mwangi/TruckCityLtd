@@ -1,4 +1,4 @@
-"""Truck_City_Ltd URL Configuration
+"""TruckCityLtd URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from accounts.decorators import required_access
 from django.contrib.auth import views as auth_views
 
-from Truck_City_Ltd import settings
+from TruckCityLtd import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),

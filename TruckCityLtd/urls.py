@@ -1,4 +1,4 @@
-"""TruckCityLtd URL Configuration
+"""Truck_City_Ltd URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -13,9 +13,25 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include, reverse_lazy
+from django.views.generic import TemplateView
+from accounts.decorators import required_access
+from django.contrib.auth import views as auth_views
+
+from Truck_City_Ltd import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('', include('accounts.urls')),
+    path('', include('store.urls')),
+    path('', include('finance.urls')),
+    path('', include('shipping.urls')),
+    path('', include('services.urls')),
+    path('', include('supply.urls')),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

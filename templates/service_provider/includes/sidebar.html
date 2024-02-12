@@ -1,0 +1,59 @@
+<aside id="sidebar" class="sidebar">
+
+  <div class="sidebar-header d-md-none">
+    <button type="button" class="btn-close ms-auto" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar"></button>
+  </div>
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'accounts:service_provider' %}">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#deliveries-nav">
+        <i class="bi bi-truck"></i>
+        <span>Deliveries</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <div id="deliveries-nav" class="collapse" data-bs-parent="#sidebar-nav">
+        <ul class="nav-content">
+          <li class="menu-item">
+          <li class="menu-item">
+            <a href="{% url 'store:assign-order-list' %}"><i class="fas fa-tasks"></i>Unassigned Orders</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'store:assigned-order-list' %}"><i class="fas fa-check-square"></i>Assigned Orders</a>
+          </li>
+          <li class="menu-item">
+            <a href="{% url 'shipping:delivered-orders' %}"><i class="fas fa-truck"></i>Delivered Orders</a>
+          </li>
+        </ul>
+      </div>
+    </li><!-- End Deliveries Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#">
+        <i class="fas fa-paper-plane"></i>
+        <span>Send Feedback</span>
+      </a>
+    </li>  
+  
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#">
+        <i class="fas fa-comments"></i>
+        <span>Feedback</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="bi bi-question-circle"></i>
+        <span>F.A.Q</span>
+      </a>
+    </li><!-- End F.A.Q Page Nav -->
+  </ul>
+
+</aside><!-- End Sidebar-->

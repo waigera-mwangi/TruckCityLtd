@@ -1,0 +1,50 @@
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'accounts:driver' %}" >
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="menu-item">
+      <a href="{% url 'shipping:driver-shipping-list' %}"><i class="fas fa-plus-square">
+      </i>Pending Shippment</a>
+    </li><br>
+
+    <li class="menu-item"><a href="{% url 'shipping:out-for-delivery' %}">
+      <i class="fas fa-shopping-cart">
+      </i>Out for Delivery Shipment</a>
+    </li><br>
+
+    <li class="menu-item"><a href="{% url 'shipping:delivered' %}">
+      <i class="fas fa-shopping-cart">
+      </i>Completed Shipment</a>
+    </li><br>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href"#">
+        <i class="fas fa-paper-plane"></i>
+        <span>Send Feedback</span>
+      </a>
+    </li>  
+  
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="">
+        <i class="fas fa-comments"></i>
+        <span>Feedback</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="">
+        <i class="bi bi-question-circle"></i>
+        <span>F.A.Q</span>
+      </a>
+    </li><!-- End F.A.Q Page Nav -->
+
+
+  </ul>
+
+</aside><!-- End Sidebar-->

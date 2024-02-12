@@ -1,0 +1,72 @@
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'accounts:supplier' %}" >
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="menu-item">
+      <a href="{% url 'supply:supplier_pending_tenders' %}">
+        <span class="bi bi-stopwatch"></span> Pending Tenders
+      </a>
+    </li><br>
+
+    <li class="menu-item">
+      <a href="{% url 'supply:approved-supplier-tenders' %}">
+        <span class="bi bi-truck"></span> Approved Tenders
+      </a>
+    </li><br>
+
+    <li class="menu-item">
+      <a href="{% url 'supply:suplied-tenders' %}">
+        <span class="bi bi-truck"></span>Tenders Pending Payement
+      </a>
+    </li><br>
+
+    <li class="menu-item">
+      <a href="{% url 'supply:supplier-confirm-tender-payments' %}">
+        <span class="bi bi-check-circle"></span> Confirm Tender Payment
+      </a>
+    </li><br>
+
+    <li class="menu-item">
+      <a href="{% url 'supply:rejected-supply-tenders' %}">
+        <span class="bi bi-x-circle"></span> Rejected Tenders
+      </a>
+    </li><br>
+
+    <li class="menu-item">
+      <a href="{% url 'supply:complete-supply-tenders' %}">
+        <span class="bi bi-check2-all"></span> Complete Tenders
+      </a>
+    </li><br>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#">
+        <i class="fas fa-paper-plane"></i>
+        <span>Send Feedback</span>
+      </a>
+    </li>  
+  
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#">
+        <i class="fas fa-comments"></i>
+        <span>Feedback</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#">
+        <i class="bi bi-question-circle"></i>
+        <span>F.A.Q</span>
+      </a>
+    </li><!-- End F.A.Q Page Nav -->
+
+  </ul>
+
+</aside><!-- End Sidebar-->
+

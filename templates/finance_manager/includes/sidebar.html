@@ -1,0 +1,79 @@
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'accounts:finance_manager' %}">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'store:pending_orders' %}">
+        <i class="fa fa-pause"></i>
+        <span>Pending Orders</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'store:approved_orders' %}">
+        <i class="fa fa-thumbs-o-up"></i>
+        <span>Approved Orders</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+    <li class="nav-item">
+      <a class="nav-link " href="{% url 'store:rejected_orders' %}">
+        <i class="fa fa-times"></i>
+        <span>Rejected Orders</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+
+    <!-- supply -->
+    <li class="menu-item">
+      <a href="{% url 'supply:pay-tenders' %}">
+          <i class="fas fa-money-check"></i>
+          Pending Tender Payments
+      </a>
+  </li><br>
+
+  <li class="menu-item">
+      <a href="{% url 'supply:paid-tenders' %}">
+          <i class="fas fa-file-invoice"></i>
+          Paid Tenders
+      </a>
+  </li><br>
+
+  <li class="menu-item">
+      <a href="{% url 'supply:confirmed-paid-tenders' %}">
+          <i class="fas fa-check-circle"></i>
+          Confirmed Tenders Payments
+      </a>
+  </li>
+  <!-- end supply -->
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#">
+      <i class="fas fa-paper-plane"></i>
+      <span>Send Feedback</span>
+    </a>
+  </li>  
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#">
+      <i class="fas fa-comments"></i>
+      <span>Feedback</span>
+    </a>
+  </li>
+  
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#>
+        <i class="bi bi-question-circle"></i>
+        <span>F.A.Q</span>
+      </a>
+    </li><!-- End F.A.Q Page Nav -->
+
+
+  </ul>
+
+</aside><!-- End Sidebar-->

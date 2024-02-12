@@ -1,0 +1,39 @@
+{% extends 'installer/layouts/base.html' %}
+
+{% block title %}View Products{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="text-center mb-4" style="color: #333;">View Available Products</h1>
+        <div class="row row-cols-1 row-cols-md-3">
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Poles to Install</title>
+            </head>
+            <body>
+                <h1>Poles to Install</h1>
+                <ul>
+                    {% for pole in poles_to_install %}
+                        <li>
+                            <h2>Pole ID: {{ pole.id }}</h2>
+                            <p>Location: {{ pole.location }}</p>
+                            <p>Status: {% if pole.installed %}Installed{% else %}Not Installed{% endif %}</p>
+                            <!-- Add more fields as needed -->
+                        </li>
+                    {% endfor %}
+                </ul>
+            </body>
+            </html>
+            
+        </div>
+    </div>
+
+    <style>
+        @media (max-width: 576px) {
+            .card-text strong {
+                color: #000000 !important;
+            }
+        }
+    </style>
+{% endblock %}

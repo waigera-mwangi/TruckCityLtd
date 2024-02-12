@@ -1,0 +1,22 @@
+{% extends 'customer/layouts/customer-base.html' %}
+
+
+{% block content %}
+<div class="container my-3">
+  <h3>Track Delivery - Order #{{ shipping.order.id }}</h3>
+  <div class="card">
+    <div class="card-body">
+      <p class="card-text"><b>Status:</b> {{ shipping.get_status_display }}</p>
+      <p class="card-text"><b>Client:</b> {{ order.user }}</p>
+      <p class="card-text"><b>Delivery Date:</b> {{ shipping.delivery_date|date:'d M Y' }}</p>
+      {% if shipping.status == "DL" %}
+            <form method="POST" action="{% url 'shipping:update_shipping_status' shipping.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success" name="status" value="CP">Confirm Received</button>
+            </form>
+    
+          {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

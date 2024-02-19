@@ -4,12 +4,18 @@ from .models import *
 
 class OrderPaymentAdmin(admin.ModelAdmin):
     list_display = ('transaction_id', 
-                    'user', 'payment_status', 'county', 'town',
-                    'phone_number','payment_date')
+                    'get_user', 
+                    'payment_status',
+                    'county', 
+                    'town',
+                    'phone_number',
+                    'payment_date')
 
+    
+    def get_user(self, obj):
+        return obj.order.user
 
-    def user(self, obj):
-    	return obj.order.user
+    get_user.short_description = 'User'
 
 
 admin.site.register(OrderPayment, OrderPaymentAdmin)

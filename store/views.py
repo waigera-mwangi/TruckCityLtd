@@ -256,13 +256,13 @@ def order_rejected_payment(request):
 def approve_payment(request, transaction_id):
     payment = OrderPayment.objects.get(transaction_id=transaction_id)
     if request.method == 'POST':
-        status = request.POST.get('status')
-        if status == 'approve':
+        payment_status = request.POST.get('payment_status')
+        if payment_status == 'approved':
             payment.payment_status = 'Approved'
             order = Order.objects.get(orderpayment=payment)
             order.is_completed = True
             order.save()
-        elif status == 'reject':
+        elif payment_status == 'rejected':
             payment.payment_status = 'Rejected'
         payment.save()  # save the payment status change
         return redirect('store:pending_orders')

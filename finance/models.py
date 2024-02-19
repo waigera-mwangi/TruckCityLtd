@@ -18,6 +18,7 @@ class OrderPayment(models.Model):
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
+        ('completed', 'Completed'),
     ]
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     payment_date = models.DateField(auto_now_add=True)
@@ -36,6 +37,7 @@ class BooKingPayment(models.Model):
         ('PN', 'Pending'),
         ('AP', 'Approved'),
         ('RJ', 'Rejected'),
+        ('CP', 'Completed')
     ]
     booking = models.OneToOneField(ServiceBooking, on_delete=models.CASCADE, null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)

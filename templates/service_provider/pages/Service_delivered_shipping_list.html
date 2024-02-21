@@ -19,10 +19,10 @@
   <tbody>
     {% for shipping in shipping_list %}
       <tr>
-        <td>{{ shipping.order.payment.transaction_id }}</td>
-        <td>{{ shipping.order.payment.county }}</td>
-        <td>{{ shipping.order.payment.town }}</td>
-        <td>{{ shipping.order.payment.phone_number }}</td>
+        <td>{{ shipping.order.orderpayment.transaction_id }}</td>
+        <td>{{ shipping.order.orderpayment.county }}</td>
+        <td>{{ shipping.order.orderpayment.town }}</td>
+        <td>{{ shipping.order.orderpayment.phone_number }}</td>
         <td>{{ shipping.delivery_date }}</td>
         <td>{{ shipping.get_status_display }}</td>
        

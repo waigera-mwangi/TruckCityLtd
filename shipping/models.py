@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 from store.models import Order
-   
+from django.contrib.auth import get_user_model
 class Shipping(models.Model):
     class Status(models.TextChoices):
         PENDING = 'PD', _('Pending')
@@ -13,7 +13,7 @@ class Shipping(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     delivery_date = models.DateField(auto_now_add=True, verbose_name='shipped_date')
     status = models.CharField(_('status'), max_length=3, choices=Status.choices, default=Status.PENDING)
-    driver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shipments_as_driver')
+    driver = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='shipments_as_driver')
 
     def __str__(self):
         return f'Shipping #{self.id}'

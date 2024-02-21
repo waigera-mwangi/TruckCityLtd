@@ -20,6 +20,8 @@ from .forms import *
 from .models import Product
 from finance.models import *
 from shipping.models import *
+from django.db.models import Q
+
 
 # custoomer viewing products
 class ProductView(View):
@@ -221,7 +223,7 @@ def approved_orders(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='Approved').first()
+        payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
         if payment:
             order_info = {
                 'transaction_id': payment.transaction_id,
@@ -239,7 +241,7 @@ def order_rejected_payment(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='Rejected').first()
+        payment = OrderPayment.objects.filter(order=order, payment_status='rejected').first()
         if payment:
             order_info = {
                 'transaction_id': payment.transaction_id,
@@ -281,7 +283,7 @@ def assign_driver_order_list(request):
     orders = Order.objects.filter(is_completed=True, shipping__isnull=True)
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='Approved').first()
+        payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
         if payment:
             order_info = {
                 'transaction_id': payment.transaction_id,
@@ -327,10 +329,19 @@ def assign_driver_order_list(request):
 
 
 def assigned_order_list(request):
-    orders = Order.objects.filter(is_completed=True, shipping__isnull=False)
+    # Filter orders with is_completed=True and associated shipping with a status other than "Delivered" or "Complete"
+    orders = Order.objects.filter(
+        is_completed=True,
+        shipping__isnull=False
+    ).exclude(
+        shipping__status=Shipping.Status.DELIVERED
+    ).exclude(
+        shipping__status=Shipping.Status.COMPLETE
+    )
+    
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='Approved').first()
+        payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
         if payment:
             order_info = {
                 'transaction_id': payment.transaction_id,

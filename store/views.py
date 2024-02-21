@@ -254,23 +254,48 @@ def order_rejected_payment(request):
     return render(request, 'finance_manager/pages/rejected-orders.html', {'order_list': order_list})
 
 def approve_payment(request, transaction_id):
+    # payment = get_object_or_404(OrderPayment, transaction_id=transaction_id)
     payment = OrderPayment.objects.get(transaction_id=transaction_id)
+    
     if request.method == 'POST':
-        payment_status = request.POST.get('payment_status')
-        if payment_status == 'approved':
+        status = request.POST.get('status')
+        if status == 'approved':
             payment.payment_status = 'Approved'
-            order = Order.objects.get(orderpayment=payment)
+            order = Order.objects.get( orderpayment = payment)
             order.is_completed = True
-            order.save()
-        elif payment_status == 'rejected':
+            order.save()  # Save the order
+        elif status == 'rejected':
             payment.payment_status = 'Rejected'
-        payment.save()  # save the payment status change
+        
+        payment.save()  # Save the payment status change
         return redirect('store:pending_orders')
 
     context = {
         'payment': payment,
     }
     return render(request, 'finance_manager/pages/pending-orders.html', context)
+
+
+
+def approve_payments(request, transaction_id):
+    payment = get_object_or_404(OrderPayment, transaction_id=transaction_id)
+    
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if status == 'approved':
+            payment.payment_status = 'approved'
+            # Additional logic if needed
+        elif status == 'rejected':
+            payment.payment_status = 'rejected'
+            # Additional logic if needed
+        
+        payment.save()  # Save the payment status change
+        return redirect('store:pending_orders')  # Redirect to the pending payment list view after processing
+    
+    # If the request method is GET, render the template with the payment details
+    context = {'payment': payment}
+    return render(request, 'finance_manager/pages/pending-orders.html', context)
+
 
 
 User = get_user_model()

@@ -253,29 +253,6 @@ def order_rejected_payment(request):
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/rejected-orders.html', {'order_list': order_list})
 
-def approve_payment(request, transaction_id):
-    # payment = get_object_or_404(OrderPayment, transaction_id=transaction_id)
-    payment = OrderPayment.objects.get(transaction_id=transaction_id)
-    
-    if request.method == 'POST':
-        status = request.POST.get('status')
-        if status == 'approved':
-            payment.payment_status = 'Approved'
-            order = Order.objects.get( orderpayment = payment)
-            order.is_completed = True
-            order.save()  # Save the order
-        elif status == 'rejected':
-            payment.payment_status = 'Rejected'
-        
-        payment.save()  # Save the payment status change
-        return redirect('store:pending_orders')
-
-    context = {
-        'payment': payment,
-    }
-    return render(request, 'finance_manager/pages/pending-orders.html', context)
-
-
 
 def approve_payments(request, transaction_id):
     payment = get_object_or_404(OrderPayment, transaction_id=transaction_id)

@@ -17,7 +17,6 @@ urlpatterns = [
     path('order/<int:order_id>/pdf/', views.customer_order_pdf, name='customer-order-pdf'),
     
     # finance manager
-    path('approve_payment/<str:transaction_id>/', approve_payment, name='approve-payment'),
     path('approve-payments/<str:transaction_id>/', approve_payments, name='approve_payments'),
     path('pending-orders/', pending_orders, name='pending_orders'),
     path('approved-orders/', approved_orders, name='approved_orders'),

@@ -7,11 +7,11 @@ class FAQ(TimeStamp):
     class QustionType(models.TextChoices):
         DRIVER = 'DR', _('Driver')
         FINANCE_MANAGER = 'FM', _('Finance Manager')
-        INVENTORY_MANAGER = 'SM', _('Inventory Manager')
-        SUPPLIER = 'RD', _('Supplier')
+        INVENTORY_MANAGER = 'IM', _('Inventory Manager')
+        SUPPLIER = 'SR', _('Supplier')
         CUSTOMER = 'CM', _('Customer')
-        BRANDER = 'BR', _('Brander')
-        DISPATCH_MANAGER = 'DM', _('Dispatch Manager')
+        INSTALLER = 'IS', _('Installer')
+        SERVICE_PROVIDER = 'SP', _('Service Provider')
         
     question_types = models.CharField(
         _('question Type'),

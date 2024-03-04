@@ -46,11 +46,11 @@ INSTALLED_APPS = [
     'djmoney',
     'accounts',
     'finance',
-    'feedback',
     'store',
     'supply',
     'shipping',
     'services',
+    'feedback',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

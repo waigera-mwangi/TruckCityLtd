@@ -35,21 +35,21 @@
     </li><!-- End Deliveries Nav -->
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="{% url 'feedback:service_send_feedback' %}">
         <i class="fas fa-paper-plane"></i>
         <span>Send Feedback</span>
       </a>
     </li>  
   
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="{% url 'feedback:service_feedback' %}">
         <i class="fas fa-comments"></i>
         <span>Feedback</span>
       </a>
     </li>
 
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link" href="{% url 'feedback:service-faq' %}">
         <i class="bi bi-question-circle"></i>
         <span>F.A.Q</span>
       </a>

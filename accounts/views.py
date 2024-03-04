@@ -179,8 +179,3 @@ def password_change(request):
     return render(request, 'accounts/change-password.html', {'form': form})
 
 
-
-
-
-
-

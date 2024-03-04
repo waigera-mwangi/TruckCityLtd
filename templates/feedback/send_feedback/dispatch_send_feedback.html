@@ -1,0 +1,54 @@
+{% extends 'dispatch/layouts/base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Send Feedback</h5>
+      <form method="post" action="{% url 'accounts:dispatch_send_feedback' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="id_receiver">Receiver:</label>
+          <select name="receiver" id="id_receiver" class="form-control">
+            <!-- Iterate over receivers to populate the dropdown options -->
+            {% for receiver in form.receiver.field.queryset %}
+              <option value="{{ receiver.pk }}">{{ receiver.username }}</option>
+            {% endfor %}
+          </select>
+        </div>
+                
+        <div class="form-group">
+          <label for="id_message">Message:</label>
+          <textarea name="message" id="id_message" class="form-control"></textarea>
+        </div>
+      
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .card {
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .card-body {
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+  </style>
+{% endblock %}

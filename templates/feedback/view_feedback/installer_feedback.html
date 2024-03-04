@@ -1,0 +1,74 @@
+{% extends 'brander/layouts/base.html' %}
+
+{% block content %}
+  <div class="feedback-conversations">
+    {% for feedback in conversations %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">From: {{ feedback.sender.get_full_name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">To: {{ feedback.receiver.get_full_name }}</h6>
+        <p class="card-text">Message: {{ feedback.message }}</p>
+      </div>
+    </div>
+    {% empty %}
+    <p>No feedback conversations found.</p>
+    {% endfor %}
+  </div>
+
+  <a href="{% url 'accounts:brander_send_feedback' %}" class="btn btn-primary send-feedback-button">
+    <i class="fas fa-plus"></i> New conversation
+  </a>  
+
+
+<style>
+  /* Common styles */
+.feedback-conversations {
+  margin-bottom: 20px;
+}
+
+.card {
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-subtitle {
+  font-style: italic;
+}
+
+.card-text {
+  margin-top: 5px;
+}
+
+.send-feedback-button {
+  display: inline-block;
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.send-feedback-button:hover {
+  background-color: #0056b3;
+}
+
+/* Styles for mobile view */
+@media (max-width: 767px) {
+  .card {
+    margin-bottom: 10px;
+  }
+
+  .send-feedback-button {
+    padding: 5px 10px;
+    font-size: 14px;
+  }
+}
+
+</style>
+
+{% endblock %}

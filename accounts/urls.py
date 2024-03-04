@@ -21,4 +21,16 @@ urlpatterns = [
     path('supplier/', views.supplier, name='supplier'),
     path('finance-manager/', views.finance_manager, name='finance_manager'),
     
+    
+ 
+       # profile
+    # path('customer-profile', customer_profile, name='customer-profile'),
+    # path('finance-profile', finance_profile, name='finance-profile'),
+    # path('brander-profile', brander_profile, name='brander-profile'),
+    # path('dispatch-profile', dispatch_profile, name='dispatch-profile'),
+    # path('driver-profile', driver_profile, name='driver-profile'),
+    # path('inventory-profile', inventory_profile, name='inventory-profile'),
+    # path('supplier-profile', supplier_profile, name='supplier-profile'),
+    
+    
 ]

@@ -59,14 +59,14 @@
 
     <!-- <li class="nav-heading">Pages</li> -->
     <li class="nav-item">
-      <a class="nav-link collapsed" href="$">
+      <a class="nav-link collapsed" href="{% url 'feedback:customer_send_feedback' %}">
         <i class="fas fa-paper-plane"></i>
         <span>Send Feedback</span>
       </a>
     </li>  
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="{% url 'feedback:customer_feedback' %}">
         <i class="fas fa-comments"></i>
         <span>Feedback</span>
       </a>
@@ -74,13 +74,13 @@
   
 
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="{% url 'feedback:about-us' %}">
         <i class="bi bi-question-circle"></i>
         <span>About Us</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#">
+      <a class="nav-link collapsed" href="{% url 'feedback:faq_question_types' %}">
         <i class="bi bi-question-circle"></i>
         <span>F.A.Q</span>
       </a>

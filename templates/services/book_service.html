@@ -2,22 +2,14 @@
 {% extends 'customer/layouts/customer-base.html' %} <!-- If you have a base template, extend it -->
 
 {% block content %}
-  <h2>Book Service</h2>
+<div style="padding: 25px;">
+ <h2>Booking Service</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-primary">Checkout</button>
+  </form>
 
-  <div>
-    <h3>{{ service.name }}</h3>
-    <p>{{ service.description }}</p>
-    <img src="{{ service.image.url }}" alt="{{ service.name }}" width="200">
-    <p>Cost per day: {{ service.price }}</p>
+</div>
 
-    <form method="post" action="{% url 'services:book_service' service.id %}">
-      {% csrf_token %}
-
-      <!-- Add a field for the transaction ID -->
-      <label for="transaction_id">Transaction ID:</label>
-      <input type="text" id="transaction_id" name="transaction_id" required>
-
-      <button type="submit">Book Now</button>
-    </form>
-  </div>
 {% endblock %}

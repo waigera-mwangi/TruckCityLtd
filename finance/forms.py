@@ -1,5 +1,6 @@
 from django import forms
-from .models import OrderPayment
+from .models import *
+import re
 from django.core.validators import RegexValidator
 
 def alphanumeric_mixed_validator(value):
@@ -25,3 +26,36 @@ class AddressForm(forms.ModelForm):
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             
         }
+        
+
+class BookingPaymentForm(forms.ModelForm):
+    class Meta:
+        model = BooKingPayment
+        fields = ['location', 'address', 'transaction_id']
+        widgets = {
+            'location': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.NumberInput(attrs={'class': 'form-control'}),
+            'transaction_id': forms.TextInput(attrs={'class': 'form-control'}),
+
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['location'].widget.attrs.update({'class': 'form-control'})
+        self.fields['address'].widget.attrs.update({'class': 'form-control'})
+        self.fields['transaction_id'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Enter A Valid Mpesa Code',
+            'pattern': '^[A-Z\d]{10}$',
+            'title': 'The Mpesa Code should be 10 characters long and in all caps'
+        })
+
+    def clean_transaction_id(self):
+        transaction_id = self.cleaned_data['transaction_id']
+        if not transaction_id:
+            raise forms.ValidationError("Mpesa Code.")
+        if not transaction_id.isupper():
+            raise forms.ValidationError("Invalid Mpesa Code. The Mpesa Code should be in all caps.")
+        if not re.match(r'^[A-Z\d]{10}$', transaction_id):
+            raise forms.ValidationError("Invalid Mpesa Code. Please enter a valid Code")
+        return transaction_id

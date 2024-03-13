@@ -22,13 +22,11 @@ admin.site.register(OrderPayment, OrderPaymentAdmin)
 
 class BooKingPaymentAdmin(admin.ModelAdmin):
     list_display = ('transaction_id',
-                    'user',
                     'location',
                     'payment_status',
                     'payment_date',
                     )
     list_filter = (
-        'user',
         'payment_date', 
         'payment_status',
     )

@@ -19,29 +19,34 @@ class ServiceCategory(models.Model):
     
 # services from categories
 class Service(models.Model):
+    name = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, null = True)
+    image = models.ImageField(null=False)
+    description = models.TextField()
+    # created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')
+    
     class Meta:
         managed = True
         verbose_name = 'Service'
         verbose_name_plural = 'Services'
-        
-    name = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, null = True)
-    image = models.ImageField(null=False)
-    description = models.TextField()
-    price = MoneyField(max_digits=10,decimal_places=2, default_currency='KES', verbose_name='Cost per day', null = True)
+           
     
     def __str__(self):
-        return self.name
+        return self.name.name
 
 # services booked
 class ServiceBooking(models.Model):
-    class Meta:
-        managed = True
-        verbose_name = 'Services Booking'
-        verbose_name_plural = 'Services Bookings'
-        
-    user = models.ForeignKey(User, null=False, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    booking_date = models.DateField(auto_now=True)
+    booking_date = models.DateField()
+    # created_at = models.DateTimeField(auto_now_add=True, verbose_name='Date Created')
+    # updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Service Booking'
+        verbose_name_plural = 'Service Bookings'
+
+    def __str__(self):
+        return f"Booking #{self.pk} - {self.service}"
     
 # assigned bookings
 class AssignedServiceBooking(models.Model):

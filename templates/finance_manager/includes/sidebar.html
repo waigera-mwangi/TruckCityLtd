@@ -49,8 +49,25 @@
           <i class="fas fa-check-circle"></i>
           Confirmed Tenders Payments
       </a>
-  </li>
+  </li><br>
   <!-- end supply -->
+
+  {% comment %} bookings {% endcomment %}
+  <li class="menu-item">
+    <a href="{% url 'services:pending-booked-services' %}">
+        <i class="fas fa-money-check-alt"></i>
+        Pending Bookings
+    </a>
+</li><br>
+
+<li class="menu-item">
+    <a href="{% url 'services:approved-booked-services' %}">
+        <i class="fas fa-check"></i>
+        Approved Bookings
+    </a>
+</li><br>
+
+{% comment %} end bookings {% endcomment %}
 
   <li class="nav-item">
     <a class="nav-link collapsed" href="{% url 'feedback:finance_send_feedback' %}">

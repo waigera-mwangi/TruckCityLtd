@@ -1,5 +1,7 @@
 
-<aside id="sidebar" class="sidebar">
+{% comment %} <aside id="sidebar" class="sidebar">
+   {% endcomment %}
+   <aside id="layout-menu" class="sidebar">
 
   <ul class="sidebar-nav" id="sidebar-nav">
 
@@ -31,7 +33,7 @@
     <li class="nav-item">
       <a class="nav-link " href="{% url 'store:customer-invoice' %}">
         <i class="fa fa-file"></i>
-        <span>Orders Invoice</span>
+        <span>Orders Receipt</span>
       </a>
     </li><!-- End Orders-->
 
@@ -49,7 +51,7 @@
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="{% url 'services:booked-services' %}">
            <i class="bi bi-receipt" style="font-size: large"></i><span>Booked service(s)</span>
           </a>
         </li>

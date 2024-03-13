@@ -34,17 +34,17 @@ class BooKingPayment(models.Model):
         verbose_name_plural = 'Booking Payments'
         
     PAYMENT_STATUS_CHOICES = [
-        ('PN', 'Pending'),
-        ('AP', 'Approved'),
-        ('RJ', 'Rejected'),
-        ('CP', 'Completed')
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+        ('completed', 'Completed')
     ]
     booking = models.OneToOneField(ServiceBooking, on_delete=models.CASCADE, null=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     location = models.CharField(max_length=50)
-    address = models.IntegerField()
+    address = models.IntegerField(null = True)
     transaction_id = models.CharField(max_length=100, unique=True)
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES,default='Pending')
     payment_date = models.DateField(auto_now_add=True)
-    phone_number = CustomPhoneNumberField(null=True)
+    # phone_number = CustomPhoneNumberField(null=True)
     

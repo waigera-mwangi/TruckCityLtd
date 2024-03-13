@@ -1,0 +1,24 @@
+{% extends 'customer/layouts/customer-base.html' %}
+
+{% block title %}Track Progress{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="text-center">Track Progress</h1>
+    <div class="card mb-3">
+      <div class="card-body">
+      	<p class="card-text"><strong>#Ticket ID:</strong> {{ booking.id }}</p>
+        <p class="card-text"><strong>Service:</strong> {{ booking.service.name }}</p>
+        <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+        {% if assignment %}
+          <p class="card-text"><strong>Istaller:</strong> {{ assignment.operator.username }}</p>
+          <p class="card-text"><strong>Installer Contact:</strong> {{ assignment.installer.phone_number }}</p>
+          <p class="card-text"><strong>Status:</strong> {{ assignment.get_status_display }}</p>
+        {% else %}
+          <p class="card-text">No Installer assignment for this booking yet.</p>
+        {% endif %}
+        
+      </div>
+    </div>
+  </div>
+{% endblock %}

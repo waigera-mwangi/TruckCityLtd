@@ -124,7 +124,7 @@ def installer(request):
     # poles_to_install = Pole.objects.filter(installed=False) 
 
 
-    return render(request, 'installer/pages/index.html', {'poles_to_install': poles_to_install})
+    return render(request, 'installer/pages/index.html')
 
 @required_access(login_url=reverse_lazy('accounts:login'), user_type="SP")
 def service_provider(request):
@@ -177,5 +177,3 @@ def password_change(request):
         else:
             messages.info(request, 'Please correct the errors below.')
     return render(request, 'accounts/change-password.html', {'form': form})
-
-

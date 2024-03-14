@@ -65,3 +65,23 @@ class AssignedServiceBooking(models.Model):
     status = models.CharField(max_length=5,choices=assign_status.choices, default=assign_status.Assigned)
     installer =  models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     
+class InstallerAssignment(models.Model):
+    class AssignmentStatus(models.TextChoices):
+        ASSIGNED = 'assigned', 'Assigned'
+        COMPLETED = 'completed', 'Completed'
+
+    booking = models.OneToOneField(ServiceBooking, on_delete=models.CASCADE, related_name='installer_assignment')
+    installer = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=AssignmentStatus.choices,
+        default=AssignmentStatus.ASSIGNED
+    )
+
+    class Meta:
+        verbose_name = 'Assigned Service Booking'
+        verbose_name_plural = 'Assigned Service Bookings'
+
+    def __str__(self):
+        return f"{self.booking} - Assigned to: {self.installer}"

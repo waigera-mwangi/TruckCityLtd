@@ -4,63 +4,30 @@
     <ul class="sidebar-nav" id="sidebar-nav">
   
       <li class="nav-item">
-        <a class="nav-link " href="{% url 'store:view-product' %}">
+        <a class="nav-link " href="#">
           <i class="bi bi-grid"></i>
           <span>Home</span>
         </a>
       </li>
       <!-- End Dashboard Nav -->
   
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-shop"></i><span>Categories</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-      
-        <ul id="tables-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-          {% for category in categories %}
-          <li>
-            <a class="bi bi-circle" href="{% url 'store:product_by_category' category.slug %}">{{ category.name|title }}</a>
-            
-          </li>
-          {% endfor %}
-        </ul>
-      </li>
-      
-      <!-- End Categories Nav -->
+     
         
       <li class="nav-item">
-        <a class="nav-link " href="{% url 'store:customer-order-list' %}">
+        <a class="nav-link " href="{% url 'services:installer_list' %}">
           <i class="fa fa-truck"></i>
-          <span>My Services</span>
+          <span>Pending Bookings</span>
         </a>
-      </li><!-- End Orders-->
-  
-        <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-           <i class="fas fa-edit"></i><span>Services</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-  
-        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          
-          <li>
-            <a href="{% url 'brands:branding' %}">
-             <i class="bi bi-receipt" style="font-size: large"></i><span>Services</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'brands:view_brands' %}">
-             <i class="bi bi-receipt" style="font-size: large"></i><span>Services</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End my branding Nav -->
-  
+      </li>
+
       <li class="nav-item">
-        <a class="nav-link " href="{% url 'store:customer-invoice' %}">
-          <i class="fa fa-file"></i>
-          <span>Orders Invoice</span>
+        <a class="nav-link " href="{% url 'services:installer_completed_list' %}">
+          <i class="fa fa-truck"></i>
+          <span>Complete Bookings</span>
         </a>
-      </li><!-- End Orders-->
+      </li><!-- -->
+  
+
   
       <!-- <li class="nav-heading">Pages</li> -->
       <li class="nav-item">

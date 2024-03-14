@@ -14,8 +14,11 @@ urlpatterns = [
     path('pending-booked-services/', BookingPaymentListView.as_view(), name='pending-booked-services'),
     path('approved-booked-services/', BookingPaymentApprovedListView.as_view(), name='approved-booked-services'),
     path('approve-booking-payment/<str:transaction_id>/', approve_booking_payment, name='approve-booking-payment'),
-        path('assign-installer/', assign_installer, name='assign-installer'),
+    path('assign-installer/', assign_installer, name='assign-installer'),
     path('assigned-installer/', assigned_installer, name='assigned-installer'),
+    path('installer-list/', installer_list, name='installer_list'),
+    path('installer-completed-list/', installer_completed_list, name='installer_completed_list'),
+    path('mark-complete/<int:booking_id>/', mark_booking_complete, name='mark-complete'),
     
     #invoice
     path('service-booking/<int:booking_id>/pdf/', service_booking_pdf, name='service_booking_pdf'),

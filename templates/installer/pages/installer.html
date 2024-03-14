@@ -1,0 +1,70 @@
+{% extends 'installer/layouts/base.html' %}
+
+{% block title %}Unassigned Bookings{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="text-center">Service Bookings</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        {% for booking in booking_list %}
+          <div class="card mb-3">
+            <div class="card h-100">
+              <img src="{{ booking.service.image.url }}" class="card-img-top" alt="Service Image">
+              <div class="card-body">
+                <h5 class="card-title">#ID: {{ booking.id }}</h5>
+                <p class="card-text"><strong>Service Name:</strong> {{ booking.service.name }}</p>
+                <p class="card-text"><strong>Customer:</strong> {{ booking.user.username }}</p>
+                <p class="card-text"><strong>Customer Contact:</strong> {{ booking.user.phone_number }}</p>
+                <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ booking.booking_payment.location }}</p>
+                <p class="card-text"><strong>Address:</strong> {{ booking.booking_payment.address }}</p>
+
+              {% if booking.operator_assignment.status != 'completed' %}
+                  <form method="post" action="{% url 'services:mark-complete' booking_id=booking.id %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-success">Mark as Complete</button>
+                  </form>
+              {% else %}
+                  <p class="text-muted">Status: Completed</p>
+              {% endif %}
+
+
+
+            </div>
+          </div>
+
+          <!-- Modal -->
+          <div class="modal fade" id="assignOperatorModal{{ booking.id }}" tabindex="-1" role="dialog" aria-labelledby="assignOperatorModalLabel{{ booking.id }}" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="assignOperatorModalLabel{{ booking.id }}">Assign Operator</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <label for="operator_id">Operator:</label>
+                    <select name="operator_id" id="operator_id" class="form-control">
+                      {% for operator in operators %}
+                        <option value="{{ operator.id }}">{{ operator.get_full_name }}</option>
+                      {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">Assign Operator</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Modal -->
+        {% empty %}
+          <p class="text-center">No bookings found.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

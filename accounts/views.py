@@ -177,5 +177,3 @@ def password_change(request):
         else:
             messages.info(request, 'Please correct the errors below.')
     return render(request, 'accounts/change-password.html', {'form': form})
-
-

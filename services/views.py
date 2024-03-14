@@ -258,3 +258,80 @@ def assigned_installer(request):
     return render(request, 'services/assign_installer.html', context)
 
 
+# installer
+def installer_list(request):
+    # Get the current logged-in user
+    user = request.user
+
+    # Check if the user is a machine installer
+    if user.user_type == User.UserTypes.INSTALLER:
+        # Modify the filter condition to include the booking_payment__payment_status
+        booking_list = ServiceBooking.objects.filter(
+            installer_assignment__installer=user,  # Filter bookings where the installer is the current user
+            installer_assignment__status=InstallerAssignment.AssignmentStatus.ASSIGNED,  # Filter assignments with status 'assigned'
+            bookingpayment__payment_status='approved'  # Filter by payment status 'approved'
+        )
+
+        installers = User.objects.filter(user_type=User.UserTypes.INSTALLER, is_active=True)
+
+        context = {
+            'booking_list': booking_list,
+            'installers': installers,
+        }
+
+        return render(request, 'installer/pages/installer.html', context)
+
+    # If the user is not a machine installer, you can handle this case accordingly.
+    # For example, you can redirect them to an error page or another view.
+
+    # Replace 'error_page' with the desired URL or view name for handling non-installer users
+    return redirect('services:installer_list')
+
+
+@login_required
+def installer_completed_list(request):
+    # Get the current logged-in user
+    user = request.user
+
+    # Check if the user is a machine installer
+    if user.user_type == User.UserTypes.INSTALLER:
+        # Modify the filter condition to include the booking_payment__payment_status
+        booking_list = ServiceBooking.objects.filter(
+            installer_assignment__installer=user,  # Filter bookings where the installer is the current user
+            installer_assignment__status=InstallerAssignment.AssignmentStatus.COMPLETED,  # Filter assignments with status 'completed'
+            bookingpayment__payment_status='approved'  # Filter by payment status 'approved'
+        )
+
+        installers = User.objects.filter(user_type=User.UserTypes.INSTALLER, is_active=True)
+
+        context = {
+            'booking_list': booking_list,
+            'installers': installers,
+        }
+
+        return render(request, 'installer/pages/installer.html', context)
+
+    # If the user is not a machine installer, you can handle this case accordingly.
+    # For example, you can redirect them to an error page or another view.
+
+    # Replace 'error_page' with the desired URL or view name for handling non-installer users
+    return redirect('services:installer_list')
+
+def mark_booking_complete(request, booking_id):
+    if request.method == 'POST':
+        booking = get_object_or_404(ServiceBooking, pk=booking_id)
+
+        # Find the corresponding MachineOperatorAssignment for the booking
+        installer_assignment = InstallerAssignment.objects.get(booking=booking)
+
+        # Update the assignment status to 'completed'
+        installer_assignment.status = InstallerAssignment.AssignmentStatus.COMPLETED
+        installer_assignment.save()
+
+        messages.success(request, 'Booking marked as complete.')
+        return redirect('services:installer_completed_list')  # Replace with the URL for the unassigned bookings page
+
+    # Redirect back to the same page if the request method is not POST
+    return redirect('services:installer_list')  # Replace with the URL for the unassigned bookings page
+
+

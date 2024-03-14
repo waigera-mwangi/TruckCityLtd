@@ -15,7 +15,7 @@ from django.views.generic import ListView
 from finance.forms import BookingPaymentForm
 from finance.models import *
 from .forms import *
-from services.models import * 
+from .models import * 
 
 # view services
 class ServiceView(View):
@@ -156,8 +156,8 @@ def track_progress(request, booking_id):
     
     booking = get_object_or_404(ServiceBooking, pk=booking_id)
 
-    # Get the related MachineOperatorAssignment or return None if not found
-    assignment = booking.operator_assignment if hasattr(booking, 'operator_assignment') else None
+    # Get the related MachineinstallerAssignment or return None if not found
+    assignment = booking.installer_assignment if hasattr(booking, 'installer_assignment') else None
 
     context = {
         'booking': booking,
@@ -205,4 +205,56 @@ def approve_booking_payment(request, transaction_id):
         'payment': booking_payment,
     }
     return render(request, 'finance_manager/pages/booking_payment_list.html', context)
+
+def assign_installer(request):
+    if request.method == 'POST':
+        installer_id = request.POST.get('installer_id')
+        booking_id = request.POST.get('booking_id')
+        print(f"Installer ID: {installer_id}, Booking ID: {booking_id}")  # Add this line for debugging
+        booking = get_object_or_404(ServiceBooking, pk=booking_id)
+        installer = get_object_or_404(User, pk=installer_id, user_type=User.UserTypes.INSTALLER)
+
+        # Check if the operator is already assigned to the booking
+        if InstallerAssignment.objects.filter(booking=booking, installer=installer).exists():
+            return redirect('services:assigned-installer')  # Replace with the desired URL or view name for the error page
+
+        assignment = InstallerAssignment(booking=booking, installer=installer)
+        assignment.save()
+
+        return redirect('services:assigned-installer')  # Replace 'operator_assigned' with your desired success URL
+
+    # Modify the filter condition to include the booking_payment__payment_status
+    booking_list = ServiceBooking.objects.filter(
+        installer_assignment__isnull=True,  # Filter out bookings with an assigned operator
+        bookingpayment__payment_status='approved'  # Filter by payment status 'approved'
+    )
+
+    installer = User.objects.filter(user_type=User.UserTypes.INSTALLER, is_active=True)
+
+    context = {
+        'booking_list': booking_list,
+        'installer': installer,
+    }
+
+    return render(request, 'services/assign_installer.html', context)
+
+
+
+def assigned_installer(request):
+
+    # Modify the filter condition to include the booking_payment__payment_status
+    booking_list = ServiceBooking.objects.filter(
+        installer_assignment__isnull=False,  # Filter out bookings with an assigned installer
+        bookingpayment__payment_status='approved'  # Filter by payment status 'approved'
+    )
+
+    installer = User.objects.filter(user_type=User.UserTypes.INSTALLER, is_active=True)
+
+    context = {
+        'booking_list': booking_list,
+        'installer': installer,
+    }
+
+    return render(request, 'services/assign_installer.html', context)
+
 

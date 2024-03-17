@@ -31,7 +31,8 @@ class UserCreateView(SuccessMessageMixin, CreateView):
     success_message = "You've registered successfully"
     success_url = reverse_lazy('accounts:login')
 
-    
+
+
 def loginView(request):
     loginform = LoginForm(request.POST or None)
     msg = ''
@@ -42,42 +43,37 @@ def loginView(request):
             password = loginform.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             
-            if user is not None and user.user_type == "CM":
-                login(request, user)
-                return redirect('accounts:customer')
-                
-            elif user is not None and user.user_type == "DR":
-                login(request, user)
-                return redirect('accounts:driver')
-            
-            elif user is not None and user.user_type == "IM":
-                login(request, user)
-                return redirect('accounts:inventory_manager')
-            
-            elif user is not None and user.user_type == "SP":
-                login(request, user)
-                return redirect('accounts:service_provider')
-            
-            elif user is not None and user.user_type == "SR":
-                login(request, user)
-                return redirect('accounts:supplier')
-            
-            elif user is not None and user.user_type == "IS":
-                login(request, user)
-                return redirect('accounts:installer')
-            
-            elif user is not None and user.user_type == "FM":
-                login(request, user)
-                return redirect('accounts:finance_manager')
+            if user is not None:
+                if user.is_active:
+                    if user.user_type == "CM":
+                        login(request, user)
+                        return redirect('accounts:customer')
+                    elif user.user_type == "DR":
+                        login(request, user)
+                        return redirect('accounts:driver')
+                    elif user.user_type == "IM":
+                        login(request, user)
+                        return redirect('accounts:inventory_manager')
+                    elif user.user_type == "SP":
+                        login(request, user)
+                        return redirect('accounts:service_provider')
+                    elif user.user_type == "SR":
+                        login(request, user)
+                        return redirect('accounts:supplier')
+                    elif user.user_type == "IS":
+                        login(request, user)
+                        return redirect('accounts:installer')
+                    elif user.user_type == "FM":
+                        login(request, user)
+                        return redirect('accounts:finance_manager')
+                else:
+                    messages.warning(request, 'Waiting for admin approval')
             else:
-                messages.warning(request, 'Invalid Login credentials ')
-                # msg = messages.error(request, 'Invalid form submission')
+                messages.warning(request, 'Invalid login credentials')
         else:
             messages.warning(request, 'Invalid form submission')
-            msg = 'Invalid form submission'
 
     return render(request, 'accounts/user-login.html', {'form': loginform, 'msg': msg})
-
 
 @required_access(login_url=reverse_lazy('accounts:login'), user_type="CM")
 def customer(request):

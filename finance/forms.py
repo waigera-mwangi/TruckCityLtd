@@ -17,12 +17,35 @@ class PaymentForm(forms.Form):
 
 class AddressForm(forms.ModelForm):
     alphanumeric_validator = RegexValidator(r'^[a-zA-Z0-9]*$', 'Only alphanumeric characters are allowed.')
+    
+    COUNTY_CHOICES = [
+        ('transnzoia', 'Trans-Nzoia'),
+        ('uasingishu', 'Uasin Gishu'),
+        ('elgeyomarakwet', 'Elgeyo-Marakwet'),
+        ('baringo', 'Baringo'),
+        ('kericho', 'Kericho'),
+        # Add more towns as needed
+    ]
+
+    # Define the town field as a ChoiceField with Select widget
+    county = forms.ChoiceField(choices=COUNTY_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    
+    TOWN_CHOICES = [
+        ('kitale', 'Kitale'),
+        ('eldoret', 'Eldoret'),
+        ('iten', 'Iten'),
+        ('marigat', 'Marigat'),
+        ('kericho', 'kericho'),
+        # Add more towns as needed
+    ]
+
+    # Define the town field as a ChoiceField with Select widget
+    town = forms.ChoiceField(choices=TOWN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    
     class Meta:
         model = OrderPayment
         fields = ['county','town','phone_number']
         widgets = {
-            'county': forms.TextInput(attrs={'class': 'form-control'}),
-            'town': forms.TextInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             
         }

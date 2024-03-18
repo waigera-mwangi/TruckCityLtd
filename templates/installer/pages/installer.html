@@ -3,38 +3,39 @@
 {% block title %}Unassigned Bookings{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1 class="text-center">Service Bookings</h1>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        {% for booking in booking_list %}
-          <div class="card mb-3">
-            <div class="card h-100">
-              <img src="{{ booking.service.image.url }}" class="card-img-top" alt="Service Image">
-              <div class="card-body">
-                <h5 class="card-title">#ID: {{ booking.id }}</h5>
-                <p class="card-text"><strong>Service Name:</strong> {{ booking.service.name }}</p>
-                <p class="card-text"><strong>Customer:</strong> {{ booking.user.username }}</p>
-                <p class="card-text"><strong>Customer Contact:</strong> {{ booking.user.phone_number }}</p>
-                <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
-                <p class="card-text"><strong>Location:</strong> {{ booking.booking_payment.location }}</p>
-                <p class="card-text"><strong>Address:</strong> {{ booking.booking_payment.address }}</p>
+<div class="container">
+  <h1 class="text-center">Service Bookings</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      {% for booking in booking_list %}
+      <div class="card mb-3">
+        <div class="card h-100">
+          <img src="{{ booking.service.image.url }}" class="card-img-top img-fluid" alt="Service Image">
+          <div class="card-body">
+            <h5 class="card-title">#ID: {{ booking.id }}</h5>
+            <p class="card-text"><strong>Service Name:</strong> {{ booking.service.name }}</p>
+            <p class="card-text"><strong>Customer:</strong> {{ booking.user.username }}</p>
+            <p class="card-text"><strong>Customer Contact:</strong> {{ booking.user.phone_number }}</p>
+            <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+            <!-- Corrected location display -->
+            <p class="card-text"><strong>Location:</strong> {{ booking.bookingpayment.location }}</p>
+            <p class="card-text"><strong>Address:</strong> {{ booking.bookingpayment.address }}</p>
 
-                {% if booking.installer_assignment.status != 'completed' %}
-                  <form method="post" action="{% url 'services:mark-complete' booking_id=booking.id %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-success">Mark as Complete</button>
-                  </form>
-                {% else %}
-                  <p class="text-muted">Status: Completed</p>
-                {% endif %}
-              </div>
-            </div>
+            {% if booking.installer_assignment.status != 'completed' %}
+            <form method="post" action="{% url 'services:mark-complete' booking_id=booking.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success">Mark as Complete</button>
+            </form>
+            {% else %}
+            <p class="text-muted">Status: Completed</p>
+            {% endif %}
           </div>
-        {% empty %}
-          <p class="text-center">No bookings found.</p>
-        {% endfor %}
+        </div>
       </div>
+      {% empty %}
+      <p class="text-center">No bookings found.</p>
+      {% endfor %}
     </div>
   </div>
+</div>
 {% endblock %}

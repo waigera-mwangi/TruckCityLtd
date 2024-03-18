@@ -3,44 +3,43 @@
 {% block title %}Unassigned Bookings{% endblock %}
 
 {% block content %}
-  <div class="container">
-    <h1 class="text-center">Service Bookings</h1>
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        {% for booking in booking_list %}
-          <div class="card mb-3">
-            <div class="card h-100">
-              <img src="{{ booking.service.image.url }}" class="card-img-top" alt="Service Image">
-              <div class="card-body">
-                <h5 class="card-title">#ID: {{ booking.id }}</h5>
-                <p class="card-text"><strong>Service Name:</strong> {{ booking.service.name }}</p>
-                <p class="card-text"><strong>User:</strong> {{ booking.user.username }}</p>
-                <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
-
-                {% if booking.installer_assignment %}
-                  <p class="card-text"><strong>Assigned Installer:</strong> {{ booking.installer_assignment.installer.get_full_name }}</p>
-                {% else %}
-                  <form method="post" action="{% url 'services:assign-installer' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
-                    <div class="form-group">
-                      <label for="installer_id">Select Installer:</label>
-                      <select name="installer_id" id="installer_id" class="form-control">
-                        {% for inst in installer %}
-                          <option value="{{ inst.id }}">{{ inst.username }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Assign Installer</button>
-                  </form>
-                {% endif %}
-              </div>
+<div class="container">
+  <h1 class="text-center mb-4">Service Bookings</h1>
+  <div class="row">
+    {% for booking in booking_list %}
+    <div class="col-12 col-sm-6 col-md-4 mb-4">
+      <div class="card">
+        <img src="{{ booking.service.image.url }}" class="card-img-top" alt="Service Image" style="max-height: 200px; object-fit: cover;">
+        <div class="card-body">
+          <h5 class="card-title">#ID: {{ booking.id }}</h5>
+          <p class="card-text"><strong>Service Name:</strong> {{ booking.service.name }}</p>
+          <p class="card-text"><strong>User:</strong> {{ booking.user.username }}</p>
+          <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+          {% if booking.installer_assignment %}
+          <p class="card-text"><strong>Assigned Installer:</strong> {{ booking.installer_assignment.installer.get_full_name }}</p>
+          {% else %}
+          <form method="post" action="{% url 'services:assign-installer' %}">
+            {% csrf_token %}
+            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+            <div class="form-group">
+              <label for="installer_id">Select Installer:</label>
+              <select name="installer_id" id="installer_id" class="form-control">
+                {% for inst in installer %}
+                <option value="{{ inst.id }}">{{ inst.username }}</option>
+                {% endfor %}
+              </select>
             </div>
-          </div>
-        {% empty %}
-          <p class="text-center">No unassigned bookings found.</p>
-        {% endfor %}
+            <button type="submit" class="btn btn-primary">Assign Installer</button>
+          </form>
+          {% endif %}
+        </div>
       </div>
     </div>
+    {% empty %}
+    <div class="col-12">
+      <p class="text-center">No unassigned bookings found.</p>
+    </div>
+    {% endfor %}
   </div>
+</div>
 {% endblock %}

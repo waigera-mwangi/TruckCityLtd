@@ -69,17 +69,22 @@ class BookServiceView(LoginRequiredMixin, CreateView):
 def booking_checkout(request, booking_id):
     booking = get_object_or_404(ServiceBooking, id=int(booking_id), user=request.user)
     payment = BooKingPayment.objects.filter(booking=booking).first()
-
+    
+    available_locations = [
+        ('kitale', 'Kitale'),
+        ('eldoret', 'Eldoret'),
+        ('iten', 'Iten'),
+        ('marigat', 'Marigat'),
+        ('kericho', 'kericho'),
+        # Add more towns as needed
+    ]
     if request.method == 'POST':
-        form = BookingPaymentForm(request.POST)
+        form = BookingPaymentForm(available_locations, request.POST)
         if form.is_valid():
-            location = form.cleaned_data['location']
             address = form.cleaned_data['address']
             transaction_id = form.cleaned_data['transaction_id']
             payment_status = 'pending'  # Set the payment_status to "pending"
-
             booking_payment, created = BooKingPayment.objects.get_or_create(booking=booking)
-            booking_payment.location = location
             booking_payment.address = address
             booking_payment.transaction_id = transaction_id
             booking_payment.payment_status = payment_status
@@ -88,7 +93,7 @@ def booking_checkout(request, booking_id):
             messages.success(request, 'Payment successful. Thank you!')
             return redirect('services:view-services')
     else:
-        form = BookingPaymentForm()
+        form = BookingPaymentForm(available_locations)  # Pass available_locations here
 
     return render(request, 'customer/pages/booking_checkout.html', {'booking': booking, 'form': form})
 

@@ -13,7 +13,7 @@ from io import BytesIO
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from xhtml2pdf import pisa
-
+from moneyed import Money
 # reports
 from django.db.models import F, Sum
 from reportlab.lib.pagesizes import letter
@@ -35,33 +35,52 @@ def checkout(request):
     order_items = order.orderitem_set.all()
     order_total = sum([item.subtotal() for item in order_items])
 
-    # Create a  object for the user if it does not exist already
+    # Define a function to calculate delivery fee based on order total
+
+
+    def calculate_delivery_fee(total):
+        if total.amount < 500:  # Assuming the total is in KES and comparing in cents
+            return Money(50, 'KES')
+        elif total.amount < 1000:
+            return Money(75, 'KES')
+        elif total.amount < 5000:
+            return Money(90, 'KES')
+        elif total.amount < 10000:
+            return Money(115, 'KES')
+        else:
+            return Money(150, 'KES')
+
+
+    delivery_fee = calculate_delivery_fee(order_total)
+    total_with_delivery = order_total + delivery_fee
+
+    # Create a CustomerProfile object for the user if it does not exist already
     customer_profile, created = CustomerProfile.objects.get_or_create(user=request.user)
 
     try:
         _profile = CustomerProfile.objects.get(user=request.user)
     except ObjectDoesNotExist:
         _profile = CustomerProfile.objects.create(user=request.user)
-    
+
     payment_form = PaymentForm(request.POST)
     address_form = AddressForm(request.POST, instance=_profile, initial={
-        'town':_profile.town,
+        'town': _profile.town,
         'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
-        'county':_profile.county
-        # Add other fields you want to prepopulate from  profile
+        'county': _profile.county
+        # Add other fields you want to prepopulate from profile
     })
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
         address_form = AddressForm(request.POST, instance=_profile, initial={
-        'town':_profile.town,
-        'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
-        'county':_profile.county,
-        # Add other fields you want to prepopulate from  profile
-    })
+            'town': _profile.town,
+            'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
+            'county': _profile.county,
+            # Add other fields you want to prepopulate from profile
+        })
         if payment_form.is_valid() and address_form.is_valid():
             transaction_id = payment_form.cleaned_data['transaction_id']
-            
+
             # Save user address
             address = address_form.save()
 
@@ -86,14 +105,14 @@ def checkout(request):
                     town=address.town,
                     county=address.county,
                     phone_number=address.phone_number,
-                    )
-            
+                )
+
             # Update product quantity in stock
             for item in order_items:
                 product = item.product
                 if product.quantity >= item.quantity:
                     product.quantity -= item.quantity
-                    if product.quantity < 0: # check if the updated quantity is a positive integer
+                    if product.quantity < 0:  # check if the updated quantity is a positive integer
                         messages.error(request, f"{product.name} is out of stock.")
                         return redirect('store:view_cart')
                     product.save()
@@ -112,16 +131,17 @@ def checkout(request):
             'town': _profile.town,
             'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
             'county': _profile.county,
-            # Add other fields you want to prepopulate from  profile
+            # Add other fields you want to prepopulate from profile
         })
         payment_form = PaymentForm()
-       
+
     context = {
         'payment_form': payment_form,
-        'address_form':address_form,
+        'address_form': address_form,
         'order_items': order_items,
         'order_total': order_total,
-        
+        'delivery_fee': delivery_fee,  # Add delivery fee to context
+        'total_with_delivery': total_with_delivery  # Add total with delivery to context
     }
     return render(request, 'customer/pages/checkout.html', context)
 
@@ -212,4 +232,7 @@ def sales_report(request):
     # Build the PDF
     doc.build(elements)
     return response
+
+
+
 

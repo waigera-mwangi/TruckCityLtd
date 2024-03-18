@@ -69,7 +69,7 @@ def loginView(request):
                 else:
                     messages.warning(request, 'Waiting for admin approval')
             else:
-                messages.warning(request, 'Invalid login credentials')
+                messages.warning(request, 'Check for incorrect details, else wait for approval')
         else:
             messages.warning(request, 'Invalid form submission')
 

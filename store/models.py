@@ -57,7 +57,7 @@ class Order(models.Model):
         
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     pole = models.ManyToManyField('Product', through='OrderItem')
-    order_date = models.DateTimeField(auto_now_add=True)
+    order_date = models.DateField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
         
 class OrderItem(models.Model):

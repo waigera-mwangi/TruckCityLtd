@@ -13,7 +13,7 @@ urlpatterns = [
     path('view_cart/', view_cart, name='view_cart'),
     path('customer-order-list/', customer_order_list, name='customer-order-list'),
     path('customer-order-details/<int:order_id>/', customer_order_detail, name='customer-order-details'),
-    path('customer-invoice/', customer_order_invoice, name='customer-invoice'),
+    path('customer-receipt/', customer_order_invoice, name='customer-receipt'),
     path('order/<int:order_id>/pdf/', views.customer_order_pdf, name='customer-order-pdf'),
     
     # finance manager

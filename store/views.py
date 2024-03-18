@@ -169,6 +169,7 @@ def customer_order_pdf(request, order_id):
     order = get_object_or_404(Order, user=user, id=order_id, is_completed=True)
     payment = OrderPayment.objects.filter(order=order).first()
     order_items = order.orderitem_set.all()
+    order_date = order.order_date
     order_total = order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost']
     
 
@@ -176,6 +177,7 @@ def customer_order_pdf(request, order_id):
     template = get_template('customer/pages/order_payment_receipt.html')
     context = {
         'order': order,
+        'order_date':order_date,
         'payment': payment,
         'order_items': order_items,
         'order_total': order_total,

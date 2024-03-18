@@ -8,14 +8,14 @@
   <div class="col">
     <div class="card h-100">
       <div class="card-body">
-        <h5 class="card-title">Invoice No: {{ order.transaction_id }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ order.date_ordered|date:"F d, Y" }}</h6>
+        <h5 class="card-title">Receit No: {{ order.transaction_id }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Order Date: {{ order.order_date|date:"F d, Y" }}</h6>
         <p class="card-text">Quantity: {{ order.quantity }}</p>
         <p class="card-text">Cost: KES{{ order.order_total }}</p>
         <p class="card-text">Status: {{ order.payment_status }}</p>
 
         {% if order.order_id and order.order_id %}
-          <a href="{% url 'store:customer-order-pdf' order.order_id %}" class="btn btn-secondary btn-sm">Download PDF Invoice</a><br>
+          <a href="{% url 'store:customer-order-pdf' order.order_id %}" class="btn btn-secondary btn-sm">Download PDF Receipt</a><br>
         {% endif %}
       </div>
     </div>

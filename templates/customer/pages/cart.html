@@ -45,10 +45,10 @@
                               <td>
                                   <form action="#" method="get">
                                       <div style="display: flex; align-items: center;">
-                                          <button type="submit" name="action" value="decrement" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;" {% if item.quantity == 1 %}disabled{% endif %}><i class="bi bi-dash"></i></button>
+                                          {% comment %} <button type="submit" name="action" value="decrement" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;" {% if item.quantity == 1 %}disabled{% endif %}><i class="bi bi-dash"></i></button> {% endcomment %}
                                           <input type="hidden" name="cart_item_id" value="{{ item.id }}">
                                           <input type="number" name="quantity" style="width: 40px; margin-right: 5px; border-radius: 3px; text-align: center;" min="1" value="{{ item.quantity }}" readonly>
-                                          <button type="submit" name="action" value="increment" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;"><i class="bi bi-plus"></i></button>
+                                          {% comment %} <button type="submit" name="action" value="increment" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;"><i class="bi bi-plus"></i></button> {% endcomment %}
                                       </div>
                                   </form>
                               </td>

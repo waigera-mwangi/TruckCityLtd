@@ -10,17 +10,14 @@ from datetime import date
 class BookingServiceForm(forms.ModelForm):
     class Meta:
         model = ServiceBooking
-        fields = ['booking_date']
-        labels = {
-            'booking_date': 'Booking Date',
+        fields = ['booking_date', 'location']
+        widgets = {
+            'booking_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'location': forms.Select(attrs={'class': 'form-control'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['booking_date'].widget = forms.DateInput(attrs={'type': 'date', 'class': 'form-control'})
 
     def clean_booking_date(self):
         booking_date = self.cleaned_data.get('booking_date')
         if booking_date and booking_date < date.today():
-            raise ValidationError("Booking date must be a present or future date.")
+            raise forms.ValidationError("Booking date must be a present or future date.")
         return booking_date

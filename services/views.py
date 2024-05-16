@@ -8,7 +8,7 @@ from django.views.generic import CreateView
 from django.template.loader import get_template 
 from io import BytesIO
 from django.http import HttpResponse
-
+from django.urls import reverse_lazy
 from xhtml2pdf import pisa
 from django.urls import reverse
 from django.views.generic import ListView
@@ -49,7 +49,6 @@ class ServiceView(View):
 #         messages.success(request, f'You have successfully booked {service.name}.')
 #         return redirect('services:view-services')
 
-    
 class BookServiceView(LoginRequiredMixin, CreateView):
     model = ServiceBooking
     form_class = BookingServiceForm
@@ -64,36 +63,32 @@ class BookServiceView(LoginRequiredMixin, CreateView):
         booking_id = self.object.id  # Retrieve the ID of the newly created ServiceBooking object
         return reverse('services:booking-checkout', kwargs={'booking_id': booking_id})
 
-
 @login_required
 def booking_checkout(request, booking_id):
     booking = get_object_or_404(ServiceBooking, id=int(booking_id), user=request.user)
-    payment = BooKingPayment.objects.filter(booking=booking).first()
     
-    available_locations = [
-        ('kitale', 'Kitale'),
-        ('eldoret', 'Eldoret'),
-        ('iten', 'Iten'),
-        ('marigat', 'Marigat'),
-        ('kericho', 'kericho'),
-        # Add more towns as needed
-    ]
     if request.method == 'POST':
-        form = BookingPaymentForm(available_locations, request.POST)
+        form = BookingPaymentForm(data=request.POST, initial={'location': booking.location})
         if form.is_valid():
-            address = form.cleaned_data['address']
             transaction_id = form.cleaned_data['transaction_id']
             payment_status = 'pending'  # Set the payment_status to "pending"
-            booking_payment, created = BooKingPayment.objects.get_or_create(booking=booking)
-            booking_payment.address = address
+            
+            # Get or create the BookingPayment associated with the booking
+            booking_payment, created = BooKingPayment.objects.get_or_create(
+                booking=booking,
+                defaults={'user': booking.user}  # Set the user from the associated booking
+            )
+            
+            # Assign the transaction details and payment status
             booking_payment.transaction_id = transaction_id
             booking_payment.payment_status = payment_status
+            
             booking_payment.save()
 
             messages.success(request, 'Payment successful. Thank you!')
             return redirect('services:view-services')
     else:
-        form = BookingPaymentForm(available_locations)  # Pass available_locations here
+        form = BookingPaymentForm(initial={'location': booking.location})  # Pass initial location
 
     return render(request, 'customer/pages/booking_checkout.html', {'booking': booking, 'form': form})
 

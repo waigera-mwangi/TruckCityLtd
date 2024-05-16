@@ -37,10 +37,18 @@ class Service(models.Model):
 class ServiceBooking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    booking_date = models.DateField()
-    # created_at = models.DateTimeField(auto_now_add=True, verbose_name='Date Created')
-    # updated_at = models.DateTimeField(auto_now=True)
+    LOCATION_CHOICES = [
+        ('kitale', 'Kitale'),
+        ('eldoret', 'Eldoret'),
+        ('iten', 'Iten'),
+        ('marigat', 'Marigat'),
+        ('kericho', 'Kericho'),
+        # Add more towns as needed
+    ]
+    location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
 
+    booking_date = models.DateField()
+    
     class Meta:
         verbose_name = 'Service Booking'
         verbose_name_plural = 'Service Bookings'

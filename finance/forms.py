@@ -54,21 +54,19 @@ class AddressForm(forms.ModelForm):
 class BookingPaymentForm(forms.ModelForm):
     class Meta:
         model = BooKingPayment
-        fields = ['location', 'address', 'transaction_id']
+        fields = [ 'address', 'transaction_id']
         widgets = {
             'address': forms.TextInput(attrs={'class': 'form-control'}),
-            'transaction_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'transaction_id': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter A Valid Mpesa Code',
+                'pattern': '^[A-Z\d]{8}$',
+                'title': 'The Mpesa Code should be 8 characters long and in all caps'
+            }),
+            # 'location': forms.Select(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, available_locations, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['location'].widget = forms.Select(choices=available_locations)
-        self.fields['location'].widget.attrs.update({'class': 'form-control'})
-
+        # self.fields['location'].widget.attrs.update({'class': 'form-control'})
         self.fields['address'].widget.attrs.update({'class': 'form-control'})
-        self.fields['transaction_id'].widget.attrs.update({
-            'class': 'form-control',
-            'placeholder': 'Enter A Valid Mpesa Code',
-            'pattern': '^[A-Z\d]{10}$',
-            'title': 'The Mpesa Code should be 10 characters long and in all caps'
-        })

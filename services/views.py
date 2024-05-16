@@ -68,29 +68,23 @@ def booking_checkout(request, booking_id):
     booking = get_object_or_404(ServiceBooking, id=int(booking_id), user=request.user)
     
     if request.method == 'POST':
-        form = BookingPaymentForm(data=request.POST, initial={'location': booking.location})
+        form = BookingPaymentForm(data=request.POST)
         if form.is_valid():
             transaction_id = form.cleaned_data['transaction_id']
             payment_status = 'pending'  # Set the payment_status to "pending"
-            location = form.cleaned_data['location']  # Retrieve the location from the form
-            address = form.cleaned_data['address']  # Retrieve the address from the form
-            
-            # Get or create the BookingPayment associated with the booking
-            booking_payment, created = BooKingPayment.objects.get_or_create(
-                booking=booking,
-                defaults={'user': booking.user, 'location': location, 'address': address}  # Set user, location, and address
-            )
-            
-            # Assign the transaction details and payment status
+            booking_payment, created = BooKingPayment.objects.get_or_create(booking=booking, user=request.user)
+            booking_payment.location = form.cleaned_data['location']  # Get location from the form
+            booking_payment.address = form.cleaned_data['address']  # Get address from the form
             booking_payment.transaction_id = transaction_id
             booking_payment.payment_status = payment_status
-            
             booking_payment.save()
 
             messages.success(request, 'Payment successful. Thank you!')
             return redirect('services:view-services')
     else:
-        form = BookingPaymentForm(initial={'location': booking.location})  # Pass initial location
+        # Initialize the form with initial data including the location from the booking
+        initial_data = {'location': booking.location}
+        form = BookingPaymentForm(initial=initial_data)
 
     return render(request, 'customer/pages/booking_checkout.html', {'booking': booking, 'form': form})
 

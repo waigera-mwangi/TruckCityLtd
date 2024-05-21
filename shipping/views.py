@@ -112,9 +112,10 @@ def reject_shipping(request, pk):
 
     if request.method == 'POST':
         rejection_message = request.POST.get('rejection_message')
-        shipping.status = Shipping.Status.REJECTED
-        shipping.rejection_message = rejection_message
-        shipping.save()
+        if rejection_message:
+            shipping.status = Shipping.Status.REJECTED
+            shipping.rejection_message = rejection_message
+            shipping.save()
 
         return redirect('store:customer-order-list')
     
@@ -122,10 +123,11 @@ def reject_shipping(request, pk):
 
 # service provider
 def service_rejected_orders(request):
-    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED)
+    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED).select_related('order', 'order__user')
     return render(request, 'service_provider/pages/manage_rejected_orders.html', {'rejected_orders': rejected_orders})
 
 
 def driver_rejected_orders(request):
-    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED)
+    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED).select_related('order', 'order__user')
+
     return render(request, 'driver/pages/manage_rejected_orders.html', {'rejected_orders': rejected_orders})

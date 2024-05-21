@@ -1,6 +1,5 @@
 {% extends 'customer/layouts/customer-base.html' %}
 
-
 {% block content %}
 <div class="container my-3">
   <h3>Track Delivery - Order #{{ shipping.order.id }}</h3>
@@ -10,12 +9,19 @@
       <p class="card-text"><b>Client:</b> {{ order.user }}</p>
       <p class="card-text"><b>Delivery Date:</b> {{ shipping.delivery_date|date:'d M Y' }}</p>
       {% if shipping.status == "DL" %}
-            <form method="POST" action="{% url 'shipping:update_shipping_status' shipping.pk %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-success" name="status" value="CP">Confirm Received</button>
-            </form>
-    
-          {% endif %}
+        <form method="POST" action="{% url 'shipping:update_shipping_status' shipping.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success" name="status" value="CP">Confirm Received</button>
+        </form>
+        <form method="POST" action="{% url 'shipping:reject_shipping' shipping.pk %}" class="mt-2">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="rejection_message" class="form-label">Rejection Message</label>
+            <textarea class="form-control" id="rejection_message" name="rejection_message" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger" name="status" value="RJ">Reject Order</button>
+        </form>
+      {% endif %}
     </div>
   </div>
 </div>

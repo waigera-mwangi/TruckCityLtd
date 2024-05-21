@@ -9,11 +9,13 @@ class Shipping(models.Model):
         OUT_FOR_DELIVERY = 'OFD', _('Out For Delivery')
         DELIVERED = 'DL', _('Delivered')
         COMPLETE = 'CL', _('Complete')
+        REJECTED = 'RJ', _('Rejected')
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     delivery_date = models.DateField(auto_now_add=True, verbose_name='shipped_date')
     status = models.CharField(_('status'), max_length=3, choices=Status.choices, default=Status.PENDING)
     driver = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='shipments_as_driver')
+    rejection_message = models.TextField(blank=True, null=True) 
 
     def __str__(self):
         return f'Shipping #{self.id}'

@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .models import *
 from .forms import *
 from accounts.models import User
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from store.models import *
 from django.views.generic import View
@@ -89,9 +90,9 @@ class UpdateShippingStatusView(View):
 
         return redirect('shipping:driver-shipping-list')
 
-# @login_required
+@login_required
 def update_shipping_status(request, pk):
-    shipping = Shipping.objects.get(pk=pk)
+    shipping = get_object_or_404(Shipping, pk=pk)
 
     if request.method == 'POST':
         status = request.POST.get('status')
@@ -105,3 +106,16 @@ def update_shipping_status(request, pk):
     
     return redirect('store:customer-order-list')
 
+@login_required
+def reject_shipping(request, pk):
+    shipping = get_object_or_404(Shipping, pk=pk)
+
+    if request.method == 'POST':
+        rejection_message = request.POST.get('rejection_message')
+        shipping.status = Shipping.Status.REJECTED
+        shipping.rejection_message = rejection_message
+        shipping.save()
+
+        return redirect('store:customer-order-list')
+    
+    return redirect('store:customer-order-list')

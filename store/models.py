@@ -30,7 +30,7 @@ class Product(models.Model):
     category = models.ForeignKey(Category, related_name = 'pole_category', on_delete=models.CASCADE,null = True,default='Wooden_poles')
     name = models.CharField(max_length=120, unique=True)
     description = models.TextField(max_length=100)
-    price = MoneyField(max_digits=10, decimal_places=2, default_currency='KES', verbose_name='Price' )
+    price = MoneyField(max_digits=10, default_currency='KES', verbose_name='Price' )
     quantity = models.PositiveIntegerField(default=1)
     image = models.ImageField()
     created_date = models.DateField(auto_now_add=True)

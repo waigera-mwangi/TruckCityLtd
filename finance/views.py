@@ -2,6 +2,8 @@ from accounts.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from .forms import *
+from .utils import calculate_delivery_fee
+from decimal import Decimal, InvalidOperation
 from store.models import Order, OrderItem
 from .models import OrderPayment
 from django.http import HttpResponse
@@ -13,19 +15,18 @@ from io import BytesIO
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404
 from xhtml2pdf import pisa
-from moneyed import Money
+from moneyed import Money 
+from django.contrib.auth.decorators import login_required 
 # reports
 from django.db.models import F, Sum
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
+from finance.utils import calculate_delivery_fee
 
 
+@login_required
 def checkout(request):
-    user = User.objects.get(pk=1)
-    order_items = OrderItem.objects.all()
-
-    # Get the latest pending order for the logged-in user
     try:
         order = Order.objects.filter(user=request.user, is_completed=False).latest('id')
     except Order.DoesNotExist:
@@ -33,71 +34,53 @@ def checkout(request):
         return redirect('store:view-products')
 
     order_items = order.orderitem_set.all()
-    order_total = sum([item.subtotal() for item in order_items])
-
-    # Define a function to calculate delivery fee based on order total
-
-
-    def calculate_delivery_fee(total):
-        if total.amount < 500:  # Assuming the total is in KES and comparing in cents
-            return Money(50, 'KES')
-        elif total.amount < 1000:
-            return Money(75, 'KES')
-        elif total.amount < 5000:
-            return Money(90, 'KES')
-        elif total.amount < 10000:
-            return Money(115, 'KES')
-        else:
-            return Money(150, 'KES')
-
+    
+    # Check for any items with None as price
+    for item in order_items:
+        if item.product.price is None:
+            messages.error(request, f"Item {item.product.name} has no price set.")
+            return redirect('store:view_cart')
+    
+    # Calculate order total
+    try:
+        order_total = sum(item.subtotal().amount for item in order_items if item.product.price is not None)
+        order_total = Money(Decimal(order_total), 'KES')
+    except (InvalidOperation, TypeError) as e:
+        messages.error(request, 'There was an error calculating your order total.')
+        return redirect('store:view_cart')
 
     delivery_fee = calculate_delivery_fee(order_total)
+
+    # Ensure delivery_fee is also a Money object
     total_with_delivery = order_total + delivery_fee
 
-    # Create a CustomerProfile object for the user if it does not exist already
     customer_profile, created = CustomerProfile.objects.get_or_create(user=request.user)
 
-    try:
-        _profile = CustomerProfile.objects.get(user=request.user)
-    except ObjectDoesNotExist:
-        _profile = CustomerProfile.objects.create(user=request.user)
-
-    payment_form = PaymentForm(request.POST)
-    address_form = AddressForm(request.POST, instance=_profile, initial={
-        'town': _profile.town,
-        'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
-        'county': _profile.county
-        # Add other fields you want to prepopulate from profile
-    })
+    address_form_initial_data = {
+        'town': customer_profile.town,
+        'phone_number': getattr(request.user, 'phone_number', ''),
+        'county': customer_profile.county
+    }
 
     if request.method == 'POST':
         payment_form = PaymentForm(request.POST)
-        address_form = AddressForm(request.POST, instance=_profile, initial={
-            'town': _profile.town,
-            'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
-            'county': _profile.county,
-            # Add other fields you want to prepopulate from profile
-        })
+        address_form = AddressForm(request.POST, instance=customer_profile)
+
         if payment_form.is_valid() and address_form.is_valid():
             transaction_id = payment_form.cleaned_data['transaction_id']
-
-            # Save user address
             address = address_form.save()
 
-            # Update the phone_number in the Profile
-            _profile.phone_number = address.phone_number
-            _profile.town = address.town
-            _profile.county = address.county
-            _profile.save()
+            customer_profile.phone_number = address.phone_number
+            customer_profile.town = address.town
+            customer_profile.county = address.county
+            customer_profile.save()
 
-            # Check if a payment record already exists for the current order
             try:
                 payment = OrderPayment.objects.get(order=order)
                 payment.transaction_id = transaction_id
-                payment.payment_status = 'Pending'
+                payment.payment_status = 'pending'
                 payment.save()
             except OrderPayment.DoesNotExist:
-                # enter data into payment model
                 payment = OrderPayment.objects.create(
                     order=order,
                     transaction_id=transaction_id,
@@ -107,32 +90,22 @@ def checkout(request):
                     phone_number=address.phone_number,
                 )
 
-            # Update product quantity in stock
             for item in order_items:
                 product = item.product
                 if product.quantity >= item.quantity:
                     product.quantity -= item.quantity
-                    if product.quantity < 0:  # check if the updated quantity is a positive integer
-                        messages.error(request, f"{product.name} is out of stock.")
-                        return redirect('store:view_cart')
                     product.save()
                 else:
                     messages.error(request, f"{product.name} is out of stock.")
                     return redirect('store:view_cart')
 
-            # Set the order as completed
             order.is_completed = True
             order.save()
 
             messages.success(request, 'Payment was successful!')
             return redirect('store:view_cart')
     else:
-        address_form = AddressForm(instance=_profile, initial={
-            'town': _profile.town,
-            'phone_number': request.user.phone_number if hasattr(request.user, 'phone_number') else '',
-            'county': _profile.county,
-            # Add other fields you want to prepopulate from profile
-        })
+        address_form = AddressForm(instance=customer_profile, initial=address_form_initial_data)
         payment_form = PaymentForm()
 
     context = {
@@ -140,10 +113,11 @@ def checkout(request):
         'address_form': address_form,
         'order_items': order_items,
         'order_total': order_total,
-        'delivery_fee': delivery_fee,  # Add delivery fee to context
-        'total_with_delivery': total_with_delivery  # Add total with delivery to context
+        'delivery_fee': delivery_fee,
+        'total_with_delivery': total_with_delivery
     }
     return render(request, 'customer/pages/checkout.html', context)
+
 
 
 def receipt(request, tender_id):
@@ -188,8 +162,14 @@ def sales_report(request):
         total_sales=Sum('order__id')
     )
 
+    # Convert amounts to Money and calculate total_with_delivery
+    for item in sales_data:
+        order_total = Money(Decimal(item['order_total_amount']), 'KES')
+        delivery_fee = calculate_delivery_fee(order_total)
+        item['total_with_delivery'] = order_total + delivery_fee
+
     # Calculate the total amount of money made
-    total_amount = sum(item['order_total_amount'] for item in sales_data)
+    total_amount = sum(item['total_with_delivery'] for item in sales_data)
 
     # Generate the PDF
     response = HttpResponse(content_type='application/pdf')
@@ -212,7 +192,7 @@ def sales_report(request):
             item['payment_status'].title(),
             item['payment_date'],
             item['transaction_id'],
-            item['order_total_amount'],  # Display the order total amount in the table
+            item['total_with_delivery'],  # Display the order total amount in the table
         ])
 
     # Add the final row with the total amount
@@ -232,7 +212,6 @@ def sales_report(request):
     # Build the PDF
     doc.build(elements)
     return response
-
 
 
 

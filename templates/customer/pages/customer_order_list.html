@@ -9,7 +9,7 @@
       <div class="card-body">
         <h5 class="card-title">Order unique id: {{ order.transaction_id }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ order.date_ordered|date:"F d, Y" }}</h6>
-        <p class="card-text">Quantity: {{ order.quantity }}</p>
+        <p class="card-text">Items ordered: {{ order.quantity }}</p>
        
         <p class="card-text">Status: {{ order.payment_status }}</p>
         <a href="{% url 'store:customer-order-details' order.order_id %}" class="btn btn-primary btn-sm">View Details</a>

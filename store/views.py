@@ -1,6 +1,10 @@
 from django.views import View
 from django.forms import inlineformset_factory
 from django.db.models import Sum, F
+from finance.utils import calculate_delivery_fee
+from django.contrib.auth.decorators import login_required 
+from moneyed import Money 
+
 from django.http import HttpResponse
 from accounts.models import User
 from io import BytesIO
@@ -130,37 +134,61 @@ def customer_order_detail(request, order_id):
     order = get_object_or_404(Order, user=user, id=order_id, is_completed=True)
     payment = OrderPayment.objects.filter(order=order).first()
     order_items = order.orderitem_set.all()
-    order_total = order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost']
 
+    # Calculate the order total
+    order_total = order.orderitem_set.annotate(
+        item_total=F('quantity') * F('product__price')
+    ).aggregate(total_cost=Sum('item_total'))['total_cost']
 
+    # Ensure order_total is a Money object
+    order_total_money = Money(Decimal(order_total), 'KES')
+
+    # Calculate the delivery fee
+    delivery_fee = calculate_delivery_fee(order_total_money)
+
+    # Add the delivery fee to the order total
+    total_with_delivery = order_total_money + delivery_fee
 
     context = {
         'order': order,
         'payment': payment,
         'order_items': order_items,
-        'order_total' : order_total, 
+        'order_total': total_with_delivery,
     }
     return render(request, 'customer/pages/customer_order_detail.html', context)
 
-
 def customer_order_invoice(request):
-        user = request.user
-        orders = Order.objects.filter(user=user, is_completed=True)
-        order_list = []
-        for order in orders:
-            payment = OrderPayment.objects.filter(order=order).first()
-            if payment:
-                order_info = {
-                    'transaction_id': payment.transaction_id,
-                    'username': order.user.username,
-                    'quantity': order.pole.aggregate(Sum('orderitem__quantity'))['orderitem__quantity__sum'],
-                    'order_total' : order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost'],
-                   'payment_status': payment.payment_status,
-                   'order_date': order.order_date,
-                    'order_id': order.id,  # Add cart_id to the dictionary
-                }
-                order_list.append(order_info)
-        return render(request, 'customer/pages/customer-invoice.html', {'order_list': order_list})  
+    user = request.user
+    orders = Order.objects.filter(user=user, is_completed=True)
+    order_list = []
+    for order in orders:
+        payment = OrderPayment.objects.filter(order=order).first()
+        if payment:
+            # Calculate the order total
+            order_total = order.orderitem_set.annotate(
+                item_total=F('quantity') * F('product__price')
+            ).aggregate(total_cost=Sum('item_total'))['total_cost']
+
+            # Ensure order_total is a Money object
+            order_total_money = Money(Decimal(order_total), 'KES')
+
+            # Calculate the delivery fee
+            delivery_fee = calculate_delivery_fee(order_total_money)
+
+            # Add the delivery fee to the order total
+            total_with_delivery = order_total_money + delivery_fee
+
+            order_info = {
+                'transaction_id': payment.transaction_id,
+                'username': order.user.username,
+                'quantity': order.orderitem_set.aggregate(Sum('quantity'))['quantity__sum'],
+                'order_total': total_with_delivery,  # Use the total with delivery
+                'payment_status': payment.payment_status,
+                'order_date': order.order_date,
+                'order_id': order.id,  # Add order_id to the dictionary
+            }
+            order_list.append(order_info)
+    return render(request, 'customer/pages/customer-invoice.html', {'order_list': order_list})
 
 
 
@@ -170,22 +198,34 @@ def customer_order_pdf(request, order_id):
     payment = OrderPayment.objects.filter(order=order).first()
     order_items = order.orderitem_set.all()
     order_date = order.order_date
-    order_total = order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost']
-    
+
+    # Calculate the order total
+    order_total = order.orderitem_set.annotate(
+        item_total=F('quantity') * F('product__price')
+    ).aggregate(total_cost=Sum('item_total'))['total_cost']
+
+    # Ensure order_total is a Money object
+    order_total_money = Money(Decimal(order_total), 'KES')
+
+    # Calculate the delivery fee
+    delivery_fee = calculate_delivery_fee(order_total_money)
+
+    # Add the delivery fee to the order total
+    total_with_delivery = order_total_money + delivery_fee
 
     # Load template for receipt
     template = get_template('customer/pages/order_payment_receipt.html')
     context = {
         'order': order,
-        'order_date':order_date,
+        'order_date': order_date,
         'payment': payment,
         'order_items': order_items,
-        'order_total': order_total,
+        'order_total': total_with_delivery,
         'user': user,
     }
     html = template.render(context)
 
-    # Create a file-like buffer to receive PDF data.
+    # Create a file-like buffer to receive PDF data
     buffer = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), buffer)
 
@@ -200,23 +240,35 @@ def customer_order_pdf(request, order_id):
 
     return HttpResponse('Error generating PDF!')
 
-
-# finance
+@login_required
 def pending_orders(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
     for order in orders:
         order_payment = OrderPayment.objects.filter(order=order, payment_status='pending').first()
         if order_payment:
+            quantity = order.orderitem_set.aggregate(Sum('quantity'))['quantity__sum']
+            
+            # Annotate order items to include product price and calculate item total
+            order_total = order.orderitem_set.annotate(
+                item_total=F('quantity') * F('product__price')
+            ).aggregate(
+                total_cost=Sum('item_total')
+            )['total_cost']
+            
+            # Ensure order_total is a Money object
+            order_total = Money(Decimal(order_total), 'KES')
+            delivery_fee = calculate_delivery_fee(order_total)
+            total_with_delivery = order_total + delivery_fee
+
             order_info = {
                 'transaction_id': order_payment.transaction_id,
                 'username': order.user.username,
-                'quantity': order.pole.aggregate(Sum('orderitem__quantity'))['orderitem__quantity__sum'],
-                'order_total' : order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost'],
-
+                'quantity': quantity,
+                'order_total': total_with_delivery,
                 'payment_status': order_payment.payment_status,
                 'date_ordered': order.order_date,
-                'payment_id': order_payment.id,  # add payment_id to order_info
+                'payment_id': order_payment.id,
             }
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/pending-orders.html', {'order_list': order_list})
@@ -225,16 +277,30 @@ def approved_orders(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
-        if payment:
+        order_payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
+        if order_payment:
+            quantity = order.orderitem_set.aggregate(Sum('quantity'))['quantity__sum']
+            
+            # Annotate order items to include product price and calculate item total
+            order_total = order.orderitem_set.annotate(
+                item_total=F('quantity') * F('product__price')
+            ).aggregate(
+                total_cost=Sum('item_total')
+            )['total_cost']
+            
+            # Ensure order_total is a Money object
+            order_total = Money(Decimal(order_total), 'KES')
+            delivery_fee = calculate_delivery_fee(order_total)
+            total_with_delivery = order_total + delivery_fee
+
             order_info = {
-                'transaction_id': payment.transaction_id,
+                'transaction_id': order_payment.transaction_id,
                 'username': order.user.username,
-                'quantity': order.pole.aggregate(Sum('orderitem__quantity'))['orderitem__quantity__sum'],
-                'order_total' : order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost'],
-                'payment_status': payment.payment_status,
+                'quantity': quantity,
+                'order_total': total_with_delivery,
+                'payment_status': order_payment.payment_status,
                 'date_ordered': order.order_date,
-                'payment_id': payment.id,  # add payment_id to order_info
+                'payment_id': order_payment.id,
             }
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/approved-orders.html', {'order_list': order_list})
@@ -243,16 +309,30 @@ def order_rejected_payment(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
     for order in orders:
-        payment = OrderPayment.objects.filter(order=order, payment_status='rejected').first()
-        if payment:
+        order_payment = OrderPayment.objects.filter(order=order, payment_status='rejected').first()
+        if order_payment:
+            quantity = order.orderitem_set.aggregate(Sum('quantity'))['quantity__sum']
+            
+            # Annotate order items to include product price and calculate item total
+            order_total = order.orderitem_set.annotate(
+                item_total=F('quantity') * F('product__price')
+            ).aggregate(
+                total_cost=Sum('item_total')
+            )['total_cost']
+            
+            # Ensure order_total is a Money object
+            order_total = Money(Decimal(order_total), 'KES')
+            delivery_fee = calculate_delivery_fee(order_total)
+            total_with_delivery = order_total + delivery_fee
+
             order_info = {
-                'transaction_id': payment.transaction_id,
+                'transaction_id': order_payment.transaction_id,
                 'username': order.user.username,
-                'quantity': order.pole.aggregate(Sum('orderitem__quantity'))['orderitem__quantity__sum'],
-                'order_total' : order.pole.annotate(item_total=F('orderitem__quantity') * F('price')).aggregate(total_cost=Sum('item_total'))['total_cost'],
-                'payment_status': payment.payment_status,
+                'quantity': quantity,
+                'order_total': total_with_delivery,
+                'payment_status': order_payment.payment_status,
                 'date_ordered': order.order_date,
-                'payment_id': payment.id,  # add payment_id to order_info
+                'payment_id': order_payment.id,
             }
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/rejected-orders.html', {'order_list': order_list})

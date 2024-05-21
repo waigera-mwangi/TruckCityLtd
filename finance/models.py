@@ -44,5 +44,5 @@ class BooKingPayment(models.Model):
     location = models.CharField(max_length=50)
     address = models.IntegerField(null=True)
     transaction_id = models.CharField(max_length=100, unique=True)
-    payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='Pending')
+    payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='pending')
     payment_date = models.DateField(auto_now_add=True)

@@ -39,7 +39,7 @@ class User(AbstractUser, PermissionsMixin):
     phone_number = CustomPhoneNumberField(unique=True, null=True)
     county = models.CharField(max_length=20)
     town = models.CharField(max_length=20)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     is_archived = models.BooleanField(default=False)
     updated = models.DateField(auto_now=True)
     created = models.DateField(auto_now_add=True)

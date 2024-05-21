@@ -112,9 +112,10 @@ def reject_shipping(request, pk):
 
     if request.method == 'POST':
         rejection_message = request.POST.get('rejection_message')
-        shipping.status = Shipping.Status.REJECTED
-        shipping.rejection_message = rejection_message
-        shipping.save()
+        if rejection_message:
+            shipping.status = Shipping.Status.REJECTED
+            shipping.rejection_message = rejection_message
+            shipping.save()
 
         return redirect('store:customer-order-list')
     

@@ -1,6 +1,6 @@
 {% extends 'installer/layouts/base.html' %}
 
-{% block title %}Unassigned Bookings{% endblock %}
+{% block title %}Service Bookings{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -17,17 +17,25 @@
             <p class="card-text"><strong>Customer:</strong> {{ booking.user.username }}</p>
             <p class="card-text"><strong>Customer Contact:</strong> {{ booking.user.phone_number }}</p>
             <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
-            <!-- Corrected location display -->
             <p class="card-text"><strong>Location:</strong> {{ booking.bookingpayment.location }}</p>
             <p class="card-text"><strong>Address:</strong> {{ booking.bookingpayment.address }}</p>
 
             {% if booking.installer_assignment.status != 'completed' %}
-            <form method="post" action="{% url 'services:mark-complete' booking_id=booking.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-success">Mark as Complete</button>
-            </form>
+              {% if not booking.installer_assignment.tools_requested %}
+                <form method="post" action="{% url 'services:request_tools' booking_id=booking.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-warning">Request Tools</button>
+                </form>
+              {% elif booking.installer_assignment.tools_provided %}
+                <form method="post" action="{% url 'services:mark-complete' booking_id=booking.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success">Mark as Complete</button>
+                </form>
+              {% else %}
+                <p class="text-muted">Tools requested, awaiting provision.</p>
+              {% endif %}
             {% else %}
-            <p class="text-muted">Status: Completed</p>
+              <p class="text-muted">Status: Completed</p>
             {% endif %}
           </div>
         </div>

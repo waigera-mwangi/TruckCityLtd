@@ -86,6 +86,8 @@ class InstallerAssignment(models.Model):
         choices=AssignmentStatus.choices,
         default=AssignmentStatus.ASSIGNED
     )
+    tools_requested = models.BooleanField(default=False)
+    tools_provided = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Assigned Service Booking'

@@ -17,8 +17,13 @@ urlpatterns = [
     path('assign-installer/', assign_installer, name='assign-installer'),
     path('assigned-installer/', assigned_installer, name='assigned-installer'),
     path('installer-list/', installer_list, name='installer_list'),
+    path('request-tools/<int:booking_id>/', views.request_tools, name='request_tools'),
     path('installer-completed-list/', installer_completed_list, name='installer_completed_list'),
     path('mark-complete/<int:booking_id>/', mark_booking_complete, name='mark-complete'),
+    
+    path('manage-tool-requests/', views.manage_tool_requests, name='manage_tool_requests'),
+    path('provide-tools/<int:assignment_id>/', views.provide_tools, name='provide_tools'),
+    
     
     #invoice
     path('service-booking/<int:booking_id>/pdf/', service_booking_pdf, name='service_booking_pdf'),

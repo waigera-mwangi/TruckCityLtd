@@ -255,6 +255,7 @@ def assigned_installer(request):
 
 
 # installer
+@login_required
 def installer_list(request):
     # Get the current logged-in user
     user = request.user
@@ -282,6 +283,21 @@ def installer_list(request):
 
     # Replace 'error_page' with the desired URL or view name for handling non-installer users
     return redirect('services:installer_list')
+@login_required
+def request_tools(request, booking_id):
+    booking = get_object_or_404(ServiceBooking, id=booking_id, installer_assignment__installer=request.user)
+
+    if request.method == 'POST':
+        form = ToolRequestForm(request.POST)
+        if form.is_valid():
+            assignment = booking.installer_assignment
+            assignment.tools_requested = True
+            assignment.save()
+            return redirect('services:installer_list')
+    else:
+        form = ToolRequestForm()
+
+    return render(request, 'installer/pages/request_tools.html', {'form': form, 'booking': booking})
 
 
 @login_required
@@ -313,21 +329,47 @@ def installer_completed_list(request):
     # Replace 'error_page' with the desired URL or view name for handling non-installer users
     return redirect('services:installer_list')
 
+
+@login_required
 def mark_booking_complete(request, booking_id):
+    booking = get_object_or_404(ServiceBooking, id=booking_id, installer_assignment__installer=request.user)
+    assignment = booking.installer_assignment
+
+    if assignment.tools_provided:
+        assignment.status = InstallerAssignment.AssignmentStatus.COMPLETED
+        assignment.save()
+        return redirect('services:installer_list')
+
+    return HttpResponse("Tools have not been provided yet.", status=403)
+
+
+@login_required
+def manage_tool_requests(request):
+    if request.user.user_type != User.UserTypes.SERVICE_PROVIDER:
+        return HttpResponse("Unauthorized", status=403)
+
+    tool_requests = InstallerAssignment.objects.filter(tools_requested=True, tools_provided=False)
+
+    context = {
+        'tool_requests': tool_requests,
+    }
+
+    return render(request, 'service_provider/pages/manage_tool_requests.html', context)
+
+@login_required
+def provide_tools(request, assignment_id):
+    if request.user.user_type != User.UserTypes.SERVICE_PROVIDER:
+        return HttpResponse("Unauthorized", status=403)
+
+    assignment = get_object_or_404(InstallerAssignment, id=assignment_id)
+
     if request.method == 'POST':
-        booking = get_object_or_404(ServiceBooking, pk=booking_id)
+        form = ToolAssignmentForm(request.POST)
+        if form.is_valid():
+            assignment.tools_provided = True
+            assignment.save()
+            return redirect('services:manage_tool_requests')
+    else:
+        form = ToolAssignmentForm()
 
-        # Find the corresponding MachineOperatorAssignment for the booking
-        installer_assignment = InstallerAssignment.objects.get(booking=booking)
-
-        # Update the assignment status to 'completed'
-        installer_assignment.status = InstallerAssignment.AssignmentStatus.COMPLETED
-        installer_assignment.save()
-
-        messages.success(request, 'Booking marked as complete.')
-        return redirect('services:installer_completed_list')  # Replace with the URL for the unassigned bookings page
-
-    # Redirect back to the same page if the request method is not POST
-    return redirect('services:installer_list')  # Replace with the URL for the unassigned bookings page
-
-
+    return render(request, 'service_provider/pages/provide_tools.html', {'form': form, 'assignment': assignment})

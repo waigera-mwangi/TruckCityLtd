@@ -21,19 +21,3 @@ class ServiceBookingAdmin(admin.ModelAdmin):
     )
     
 admin.site.register(ServiceBooking, ServiceBookingAdmin)
-
-
-class AssignedServiceBookingAdmin(admin.ModelAdmin):
-    list_display = (
-        'service', 
-        'installer',
-        'status',
-        'date_assigned',
-    )
-    list_filter = (
-        'service',
-        'installer',
-        'status',
-    )
-    
-admin.site.register(AssignedServiceBooking, AssignedServiceBookingAdmin)

@@ -57,22 +57,7 @@ class ServiceBooking(models.Model):
         return f"Booking #{self.pk} - {self.service}"
     
 # assigned bookings
-class AssignedServiceBooking(models.Model):
-    class  Meta:
-        db_table = ''
-        managed = True
-        verbose_name = 'Assigned service'
-        verbose_name_plural = 'Assigned services'
-        
-    class assign_status(models.TextChoices):
-        Assigned = 'AS', _('Assigned')
-        Completed = 'CP', _('Completed')
-        
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=False)
-    date_assigned = models.DateField(auto_now_add=True)
-    status = models.CharField(max_length=5,choices=assign_status.choices, default=assign_status.Assigned)
-    installer =  models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    
+
 class InstallerAssignment(models.Model):
     class AssignmentStatus(models.TextChoices):
         ASSIGNED = 'assigned', 'Assigned'

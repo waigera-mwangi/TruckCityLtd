@@ -7,12 +7,12 @@
   <h1 class="text-center">Rejected Orders</h1>
   <div class="row justify-content-center">
     <div class="col-md-8">
-      {% for order in rejected_orders %}
+      {% for shipping in rejected_orders %}
       <div class="card mb-3">
         <div class="card-body">
-          <p class="card-text"><strong>Order ID:</strong> {{ order.id }}</p>
-          <p class="card-text"><strong>Customer:</strong> {{ order.user.username }}</p>
-          <p class="card-text"><strong>Rejection Reason:</strong> {{ order.shipping.rejection_message }}</p>
+          <p class="card-text"><strong>Order ID:</strong> {{ shipping.order.id }}</p>
+          <p class="card-text"><strong>Customer:</strong> {{ shipping.order.user.username }}</p>
+          <p class="card-text"><strong>Rejection Reason:</strong> {{ shipping.rejection_message }}</p>
         </div>
       </div>
       {% empty %}

@@ -17,6 +17,9 @@ urlpatterns = [
     path('update_shipping/<str:pk>/', UpdateShippingStatusView.as_view(), name='update_shipping'),
     path('reject/<int:pk>/', reject_shipping, name='reject_shipping'),
     path('update_shipping_status/<str:pk>/', update_shipping_status, name='update_shipping_status'),
+    
+    path('service-provider-rejected-orders/', service_rejected_orders, name='service_rejected_orders'),
+    path('driver-provider-rejected-orders/', driver_rejected_orders, name='driver_rejected_orders'),
    
 
 ]

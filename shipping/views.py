@@ -119,3 +119,13 @@ def reject_shipping(request, pk):
         return redirect('store:customer-order-list')
     
     return redirect('store:customer-order-list')
+
+# service provider
+def service_rejected_orders(request):
+    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED)
+    return render(request, 'service_provider/pages/manage_rejected_orders.html', {'rejected_orders': rejected_orders})
+
+
+def driver_rejected_orders(request):
+    rejected_orders = Shipping.objects.filter(status=Shipping.Status.REJECTED)
+    return render(request, 'driver/pages/manage_rejected_orders.html', {'rejected_orders': rejected_orders})

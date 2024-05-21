@@ -88,6 +88,7 @@
             <th> Price</th>
             <th>Quantity</th>
             <th>Subtotal</th>
+            <th>Delivery fee</th>
           </tr>
         </thead>
         <tbody>
@@ -98,12 +99,13 @@
             <td>{{ item.product.price }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.subtotal }}</td>
+            <td>{{ delivery_fee }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
       <div class="total" style="font-size: 12px;">
-        Total: KES {{ order_total }}
+        Total: {{ total_with_delivery }}
       </div>
       
     </div>

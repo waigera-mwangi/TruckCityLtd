@@ -3,7 +3,7 @@ from django.forms import inlineformset_factory
 from django.db.models import Sum, F
 from finance.utils import calculate_delivery_fee
 from django.contrib.auth.decorators import login_required 
-from moneyed import Money 
+from djmoney.money import Money
 
 from django.http import HttpResponse
 from accounts.models import User
@@ -199,19 +199,18 @@ def customer_order_pdf(request, order_id):
     order_items = order.orderitem_set.all()
     order_date = order.order_date
 
-    # Calculate the order total
-    order_total = order.orderitem_set.annotate(
-        item_total=F('quantity') * F('product__price')
-    ).aggregate(total_cost=Sum('item_total'))['total_cost']
+    # Calculate order total as Money object
+    order_total = Money(
+        order.orderitem_set.annotate(
+            item_total=F('quantity') * F('product__price')
+        ).aggregate(
+            total_cost=Sum('item_total')
+        )['total_cost'] or 0, 'KES'
+    )
 
-    # Ensure order_total is a Money object
-    order_total_money = Money(Decimal(order_total), 'KES')
-
-    # Calculate the delivery fee
-    delivery_fee = calculate_delivery_fee(order_total_money)
-
-    # Add the delivery fee to the order total
-    total_with_delivery = order_total_money + delivery_fee
+    # Calculate delivery fee
+    delivery_fee = calculate_delivery_fee(order_total)
+    total_with_delivery = order_total + delivery_fee
 
     # Load template for receipt
     template = get_template('customer/pages/order_payment_receipt.html')
@@ -220,12 +219,14 @@ def customer_order_pdf(request, order_id):
         'order_date': order_date,
         'payment': payment,
         'order_items': order_items,
-        'order_total': total_with_delivery,
+        'order_total': order_total,
+        'delivery_fee': delivery_fee,
+        'total_with_delivery': total_with_delivery,
         'user': user,
     }
     html = template.render(context)
 
-    # Create a file-like buffer to receive PDF data
+    # Create a file-like buffer to receive PDF data.
     buffer = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), buffer)
 
@@ -239,7 +240,6 @@ def customer_order_pdf(request, order_id):
         return response
 
     return HttpResponse('Error generating PDF!')
-
 @login_required
 def pending_orders(request):
     orders = Order.objects.filter(is_completed=True)

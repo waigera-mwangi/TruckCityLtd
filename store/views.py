@@ -122,6 +122,18 @@ def customer_order_list(request):
                 order_list.append(order_info)
         return render(request, 'customer/pages/customer_order_list.html', {'order_list': order_list})    
 
+def search(request):
+    query = request.GET.get('q', '')
+    product_results = Product.objects.filter(name__icontains=query) | Product.objects.filter(description__icontains=query)
+    service_results = Service.objects.filter(name__name__icontains=query) | Service.objects.filter(description__icontains=query)
+
+    context = {
+        'query': query,
+        'product_results': product_results,
+        'service_results': service_results,
+    }
+    return render(request, 'customer/pages/search_results.html', context)
+
 
 def customer_order_detail(request, order_id):
     user = request.user

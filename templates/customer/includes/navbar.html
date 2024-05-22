@@ -15,13 +15,12 @@
 
     
     <div class="search-bar">
-      <form action="#" method="POST">
-        {% csrf_token %}
-        <div class="input-group">
-          <input type="search" required class="form-control" name="productsearch" placeholder="Search:" id="searchproducts">
-          <button type="submit" class="input-group-text"> <i class="fa fa-search"> </i> </button> 
-        </div>
-      </form> 
+      <!-- base.html or any template where you want the search form -->
+    <form action="{% url 'store:search' %}" method="get" class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{ request.GET.q }}">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+
     </div>
       
     <!-- End Search Bar -->

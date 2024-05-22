@@ -30,8 +30,21 @@ from .models import Shipping
 
 
 class ShippingAdmin(admin.ModelAdmin):
-    list_display = ('id', 'order', 'delivery_date', 'status', 'driver',)
+    list_display = ('order_id', 'order_user', 'delivery_date', 'status', 'driver')
     list_filter = ('delivery_date', )
-    search_fields = ('name', 'order')
+    search_fields = ('order__user__username', 'order__id')
     readonly_fields = ('delivery_date',)
+
+    # Custom method to get the username of the order user
+    def order_user(self, obj):
+        return obj.order.user.username
+
+    # Custom method to get the order ID
+    def order_id(self, obj):
+        return obj.order.id
+
+    # Add column names for admin display
+    order_user.short_description = 'Customer'
+    order_id.short_description = 'Order ID'
+
 admin.site.register(Shipping, ShippingAdmin)

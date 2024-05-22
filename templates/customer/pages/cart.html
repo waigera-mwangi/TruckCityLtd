@@ -3,135 +3,91 @@
 {% block title %}View Cart{% endblock title %}
 
 {% block content %}
-
-
-</style>
-
- <div style="font-size: 12px; padding: 0px;"un>
-<section class="h-100 h-custom" style="background-color: #eee;">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col">
-        <div class="card">
-          <div class="card-body p-4">
-            <div class="row">
-                <h1 style="text-align: center; color: rgb(1, 1, 12);">Cart</h1>
-              <div class="col-lg-12">
-                <h5 class="my-3 text-center">
-                  <a href="{% url 'store:view-products' %}" class="text-primary text-decoration-none"><i class="fas fa-long-arrow-alt-left me-2"></i>Continue Shopping</a>
-                </h5>
-                
-                
-                <hr>
-
-                
-                {% if order_items %}
-                <table class="table table-striped">
-                  <thead>
-                      <tr>
-                          <th>Image</th>
-                          <th>Name</th>
-                          <th>Quantity</th>
-                          <th>Price</th>
-                          <th></th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {% for item in order_items %}
-                      
-                          <tr>
-                              <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px;"></td>
-                              <td>{{ item.product.name }}</td>
-                              <td>
-                                  <form action="#" method="get">
-                                      <div style="display: flex; align-items: center;">
-                                          {% comment %} <button type="submit" name="action" value="decrement" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;" {% if item.quantity == 1 %}disabled{% endif %}><i class="bi bi-dash"></i></button> {% endcomment %}
-                                          <input type="hidden" name="cart_item_id" value="{{ item.id }}">
-                                          <input type="number" name="quantity" style="width: 40px; margin-right: 5px; border-radius: 3px; text-align: center;" min="1" value="{{ item.quantity }}" readonly>
-                                          {% comment %} <button type="submit" name="action" value="increment" style="padding: 3px 6px; margin-right: 5px; border-radius: 3px;"><i class="bi bi-plus"></i></button> {% endcomment %}
-                                      </div>
-                                  </form>
-                              </td>
-                              <td>{{ item.product.price }}</td>
-                              
-                              <td>
-                                  <form action="#" method="get">
-                                      <button type="submit" style="padding: 0; border: none; background-color: transparent;">
-                                          <i class="fas fa-trash-alt" style="color: #f44336;"></i>
-                                      </button>
-                                      <input type="hidden" name="order_item_id" value="{{ item.id }}">
-                                  </form>
-                              </td>
-                          </tr>
-                      {% endfor %}
-                  </tbody>
-              </table>
-              
-            
-            
-              </table>
-
-              <div class="d-flex justify-content-end">
-                <div style="width: 180px; float: right;">
-                  <h5 class="mb-0">Total: {{order_total}}</h5>
+<div class="container my-3">
+    <section class="h-100 h-custom" style="background-color: #eee;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <h1 style="text-align: center; color: rgb(1, 1, 12);">Cart</h1>
+                                <div class="col-lg-12">
+                                    <h5 class="my-3 text-center">
+                                        <a href="{% url 'store:view-products' %}" class="text-primary text-decoration-none">
+                                            <i class="fas fa-long-arrow-alt-left me-2"></i>Continue Shopping
+                                        </a>
+                                    </h5>
+                                    <hr>
+                                    {% if order_items %}
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Image</th>
+                                                <th>Name</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in order_items %}
+                                            <tr>
+                                                <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px;"></td>
+                                                <td>{{ item.product.name }}</td>
+                                                <td>
+                                                    <form action="{% url 'store:update_cart_item' %}" method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="order_item_id" value="{{ item.id }}">
+                                                        <button type="submit" name="action" value="decrement" class="btn btn-outline-secondary btn-sm" {% if item.quantity == 1 %}disabled{% endif %}>
+                                                            <i class="bi bi-dash"></i>
+                                                        </button>
+                                                    </form>
+                                                    <input type="number" name="quantity" style="width: 40px; text-align: center;" min="1" value="{{ item.quantity }}" readonly>
+                                                    <form action="{% url 'store:update_cart_item' %}" method="post" style="display: inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="order_item_id" value="{{ item.id }}">
+                                                        <button type="submit" name="action" value="increment" class="btn btn-outline-secondary btn-sm">
+                                                            <i class="bi bi-plus"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                                <td>{{ item.product.price }}</td>
+                                                <td>
+                                                    <form action="{% url 'store:remove_cart_item' %}" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="order_item_id" value="{{ item.id }}">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="d-flex justify-content-end">
+                                        <div style="width: 180px; float: right;">
+                                            <h5 class="mb-0">Total: {{ order_total }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="container-fluid">
+                                        <div class="d-flex flex-column align-items-center mt-4">
+                                            <div class="text-center">
+                                                <a href="{% url 'finance:checkout' %}" class="btn btn-primary mt-3">Checkout</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <p>Your cart is empty.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              
-                   
-              <div class="container-fluid">
-                <div class="d-flex flex-column align-items-center mt-4">
-                  <!-- order_form.html -->
-
-              <form method="post" action="#">
-                {% csrf_token %}
-                {{ form.as_p }}
-              </form>
-
-                  <div class="text-center">
-                   
-                    <a href="{% url 'finance:checkout' %}" class="btn btn-primary mt-3">Checkout</a>
-                  </div>
-                </div>
-              </div>
-              
-
-                {% else %}
-                    <p>Your cart is empty.</p>
-                {% endif %}
-
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-<script type="text/javascript">
-    function incrementItem(productId) {
-  const quantityElement = document.getElementById(`quantity_${productId}`);
-  const quantity = parseInt(quantityElement.innerText);
-  quantityElement.innerText = quantity + 1;
-}
-
-function decrementItem(productId) {
-  const quantityElement = document.getElementById(`quantity_${productId}`);
-  const quantity = parseInt(quantityElement.innerText);
-  if (quantity > 1) {
-    quantityElement.innerText = quantity - 1;
-  }
-}
-
-    // Keep the focus on the payment form element after a message is displayed
-    const paymentForm = document.getElementById('payment-form');
-    paymentForm.addEventListener('submit', (event) => {
-        const messageElem = document.querySelector('.messages');
-        if (messageElem) {
-            event.preventDefault();
-            paymentForm.scrollIntoView();
-        }
-    });
-
-</script>
-
-
+    </section>
+</div>
 {% endblock %}

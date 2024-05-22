@@ -60,10 +60,7 @@ def add_to_cart(request, pk):
     messages.success(request, 'Item added to cart.', extra_tags='text-success')
     return redirect('store:view-products')
 
-# @login_required
 def view_cart(request):
-    user = User.objects.all()
-    
     # Retrieve the latest pending order if one exists, otherwise create a new one
     try:
         order = Order.objects.filter(user=request.user, is_completed=False).latest('id')
@@ -73,26 +70,23 @@ def view_cart(request):
     order_items = order.orderitem_set.all()
 
     if request.method == 'POST':
-        if 'order_item_id' in request.POST:
-            # Handle updates to order items
-            order_item_id = int(request.POST.get('order_item_id'))
-            order_item = OrderItem.objects.get(id=order_item_id, order=order)
+        action = request.POST.get('action')
+        order_item_id = int(request.POST.get('order_item_id'))
+        order_item = OrderItem.objects.get(id=order_item_id, order=order)
 
-            if 'increment' in request.POST:
-                order_item.quantity += 1
+        if action == 'increment':
+            order_item.quantity += 1
+            order_item.save()
+            messages.success(request, 'Quantity updated successfully.', extra_tags='text-success')
+        elif action == 'decrement':
+            if order_item.quantity > 1:
+                order_item.quantity -= 1
                 order_item.save()
                 messages.success(request, 'Quantity updated successfully.', extra_tags='text-success')
+            else:
+                order_item.delete()
+                messages.success(request, 'Item removed from order.', extra_tags='text-success')
 
-            if 'decrement' in request.POST:
-                if order_item.quantity > 1:
-                    order_item.quantity -= 1
-                    order_item.save()
-                    messages.success(request, 'Quantity updated successfully.', extra_tags='text-success')
-                else:
-                    order_item.delete()
-                    messages.success(request, 'Item removed from order.', extra_tags='text-success')
-
-                    
     # Calculate the subtotal for each order item and save it
     for item in order_items:
         item.subtotal = item.product.price * item.quantity

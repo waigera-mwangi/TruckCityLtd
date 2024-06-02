@@ -3,15 +3,15 @@ from .models import *
 
 admin.site.register(ServiceCategory)
 admin.site.register(Service)
-admin.site.register(InstallerAssignment)
+
 
 
 class ServiceBookingAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'service',
-        'booking_date',
-        'location'
+        'location',
+        'booking_date'
     )
     
     list_filter = (
@@ -21,3 +21,22 @@ class ServiceBookingAdmin(admin.ModelAdmin):
     )
     
 admin.site.register(ServiceBooking, ServiceBookingAdmin)
+
+class InstallerAssignmentAdmin(admin.ModelAdmin):
+    list_display = (
+        'booking',
+        'installer',
+        'date', 
+        'status', 
+        'tools_requested',
+        'tools_provided'
+    )
+    
+    list_filter = (
+        'booking',
+        'installer',
+        'status'
+    )
+    
+    
+admin.site.register(InstallerAssignment)

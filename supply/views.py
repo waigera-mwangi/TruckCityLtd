@@ -105,7 +105,6 @@ class PendingTenderListView(LoginRequiredMixin, ListView):
     context_object_name = 'tenders'
 
     def get_queryset(self):
-        # Filter the supply tenders by tender_status = 'Pending' and user_id = the logged-in user's id
         return SupplyTender.objects.filter(tender_status='Pending')
 
     def post(self, request, *args, **kwargs):
@@ -113,16 +112,20 @@ class PendingTenderListView(LoginRequiredMixin, ListView):
         price = request.POST.get('price')
 
         if tender_id and price:
-            # Update the SupplyTender object with the provided price and change the tender_status to 'Supplied'
             tender = SupplyTender.objects.get(id=tender_id)
-            tender.price = price
-            tender.tender_status = 'Accepted'
-            tender.user = request.user  # set the supplied_by attribute to the current user
-            tender.save()
-            messages.success(request, '{} Thanks for acccepting our tender request.Please  Wait for confirmation.'.format(request.user.get_full_name()))
-    
-        return redirect('supply:supplier_pending_tenders')
 
+            if float(price) > tender.product.price.amount:
+                messages.error(request, 'The price entered is higher than the requested product price. Please enter a valid price.')
+            else:
+                tender.price = price
+                tender.tender_status = 'Accepted'
+                tender.user = request.user
+                tender.save()
+                messages.success(request, '{} Thanks for accepting our tender request. Please wait for confirmation.'.format(request.user.get_full_name()))
+
+        return redirect('supply:supplier_pending_tenders')
+    
+    
 # class PendingApprovalTenderListView(ListView):
 #     model = SupplyTender
 #     template_name = 'supplier/pending_approval_tenders.html'

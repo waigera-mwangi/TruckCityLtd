@@ -20,6 +20,7 @@ admin.site.register(OrderPayment, OrderPaymentAdmin)
 
 class BooKingPaymentAdmin(admin.ModelAdmin):
     list_display = ('transaction_id',
+                    'user',
                     'location',
                     'address',
                     'payment_status',

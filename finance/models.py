@@ -2,6 +2,7 @@ from django.db import models
 from accounts.models import User
 from store.models import Order
 from phonenumber_field.modelfields import PhoneNumberField
+from supply.models import SupplyTender
 from services.models import * 
 class CustomPhoneNumberField(PhoneNumberField):
     default_error_messages = {
@@ -46,3 +47,17 @@ class BooKingPayment(models.Model):
     transaction_id = models.CharField(max_length=100, unique=True)
     payment_status = models.CharField(max_length=50, choices=PAYMENT_STATUS_CHOICES, default='pending')
     payment_date = models.DateField(auto_now_add=True)
+    
+
+# finance model to view paid tenders
+class TenderPayment(models.Model):
+    supply_tender = models.OneToOneField(SupplyTender, on_delete=models.CASCADE, related_name='payment')
+    payment_date = models.DateField(auto_now_add=True)
+    paid_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payments')
+
+    @property
+    def amount(self):
+        return self.supply_tender.price * self.supply_tender.quantity
+
+    def __str__(self):
+        return f"Payment for {self.supply_tender}"

@@ -1,7 +1,5 @@
 from django.contrib import admin
 from .models import *
-
-
 class OrderPaymentAdmin(admin.ModelAdmin):
     list_display = ('transaction_id', 
                     'get_user', 
@@ -32,3 +30,15 @@ class BooKingPaymentAdmin(admin.ModelAdmin):
         'payment_status',
     )
 admin.site.register(BooKingPayment, BooKingPaymentAdmin)
+
+
+class TenderPaymentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'supply_tender', 'payment_date', 'paid_to', 'display_amount')
+    list_filter = ('payment_date',)
+    search_fields = ('supply_tender__product__name', 'paid_by__username')
+
+    def display_amount(self, obj):
+        return obj.amount
+    display_amount.short_description = 'Amount'
+
+admin.site.register(TenderPayment, TenderPaymentAdmin)

@@ -11,8 +11,8 @@
         <p class="card-text"><strong>Service:</strong> {{ booking.service.name }}</p>
         <p class="card-text"><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
         {% if assignment %}
-          <p class="card-text"><strong>Istaller:</strong> {{ assignment.operator.username }}</p>
-          <p class="card-text"><strong>Installer Contact:</strong> {{ assignment.installer.phone_number }}</p>
+          <p class="card-text"><strong>Installer:</strong> {{ assignment.installer }}</p>
+          {% comment %} <p class="card-text"><strong>Installer Contact:</strong> {{ assignment.installer.phone_number }}</p> {% endcomment %}
           <p class="card-text"><strong>Status:</strong> {{ assignment.get_status_display }}</p>
         {% else %}
           <p class="card-text">No Installer assignment for this booking yet.</p>

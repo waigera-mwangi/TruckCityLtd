@@ -14,6 +14,7 @@
               <tr>
                 <th scope="col">Transaction ID</th>
                 <th scope="col">Username</th>
+                <th scope="col">Service</th>
                 <th scope="col">Amount</th>
                 <th scope="col">Payment Status</th>
                 <th scope="col">Date</th>
@@ -26,6 +27,7 @@
     <tr>
         <th scope="row">{{ booking.bookingpayment.transaction_id }}</th>
         <td>{{ booking.user.username }}</td>
+        <td>{{ booking.service}}</td>
         <td>{{ booking.service.name.price }}</td>
         <td>{{ booking.bookingpayment.payment_status }}</td>
         <td>{{ booking.booking_date }}</td>

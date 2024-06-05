@@ -384,3 +384,18 @@ def provide_tools(request, assignment_id):
         form = ToolAssignmentForm()
 
     return render(request, 'service_provider/pages/provide_tools.html', {'form': form, 'assignment': assignment, 'tools_required': assignment.booking.tools_required})
+
+
+@login_required
+def provided_tools(request):
+    if request.user.user_type != User.UserTypes.SERVICE_PROVIDER:
+        return HttpResponse("Unauthorized", status=403)
+
+    # Fetch all assignments where tools have been provided
+    provided_tools_list = InstallerAssignment.objects.filter(tools_provided=True).select_related('booking__service', 'installer')
+
+    context = {
+        'provided_tools_list': provided_tools_list,
+    }
+
+    return render(request, 'service_provider/pages/provided_tools.html', context)

@@ -24,6 +24,7 @@ urlpatterns = [
     path('manage-tool-requests/', views.manage_tool_requests, name='manage_tool_requests'),
     path('provide-tools/<int:assignment_id>/', views.provide_tools, name='provide_tools'),
     path('provided-tools/', provided_tools, name='provided_tools'),
+    path('service-bookings/', service_bookings, name='service_bookings'),
     
     #invoice
     path('service-booking/<int:booking_id>/pdf/', service_booking_pdf, name='service_booking_pdf'),

@@ -12,13 +12,17 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         'service',
         'location',
         'booking_date',
-        'tools_required'
+        'tools_required',
+        'service_delivered',
+        'customer_approval',
+        'customer_feedback',
     )
     
     list_filter = (
         'service',
         'user',
-        'location'
+        'location',
+        'booking_date'
     )
     
 admin.site.register(ServiceBooking, ServiceBookingAdmin)

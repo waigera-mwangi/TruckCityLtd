@@ -399,3 +399,8 @@ def provided_tools(request):
     }
 
     return render(request, 'service_provider/pages/provided_tools.html', context)
+
+
+def service_bookings(request):
+    bookings = ServiceBooking.objects.all()
+    return render(request, 'service_provider/pages/service_bookings.html', {'bookings': bookings})

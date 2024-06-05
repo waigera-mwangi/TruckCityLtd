@@ -9,7 +9,10 @@
         <tr>
           <th scope="col">Transaction ID</th>
           <th scope="col">Username</th>
-          <th scope="col">Total Cost</th>
+          <th scope="col">Product</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Price</th>
+          <th scope="col">Total with delivery</th>
           <th scope="col">Payment Status</th>
           <th scope="col">Date</th>
         </tr>
@@ -19,13 +22,20 @@
         <tr>
           <td>{{ order.transaction_id }}</td>
           <td>{{ order.username }}</td>
-          <td>Ksh {{ order.order_total }}</td>
+          {% for item in order.order_items %}
+          <td>{{ item.product_name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.price }}</td>
+          <td>{{ order.order_total }}</td>
+          {% empty %}
+          <td colspan="4">No items</td>
+          {% endfor %}
           <td>{{ order.payment_status }}</td>
           <td>{{ order.date_ordered }}</td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center">No orders found.</td>
+          <td colspan="8" class="text-center">No orders found.</td>
         </tr>
         {% endfor %}
       </tbody>

@@ -11,7 +11,8 @@ class ServiceBookingAdmin(admin.ModelAdmin):
         'user',
         'service',
         'location',
-        'booking_date'
+        'booking_date',
+        'tools_required'
     )
     
     list_filter = (

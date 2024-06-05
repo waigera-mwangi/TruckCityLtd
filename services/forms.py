@@ -27,3 +27,16 @@ class ToolRequestForm(forms.Form):
 
 class ToolAssignmentForm(forms.Form):
     confirm_provide_tools = forms.BooleanField(required=True, label="Confirm tool provision")
+    
+    
+class FeedbackForm(forms.Form):
+    customer_approval = forms.ChoiceField(
+        choices=[(True, 'Accept'), (False, 'Reject')],
+        widget=forms.RadioSelect,
+        label="Do you accept the service was delivered?"
+    )
+    customer_feedback = forms.CharField(
+        widget=forms.Textarea,
+        required=False,
+        label="Leave a comment"
+    )

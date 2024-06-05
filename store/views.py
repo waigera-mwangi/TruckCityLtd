@@ -246,6 +246,8 @@ def customer_order_pdf(request, order_id):
         return response
 
     return HttpResponse('Error generating PDF!')
+
+
 @login_required
 def pending_orders(request):
     orders = Order.objects.filter(is_completed=True)
@@ -267,6 +269,17 @@ def pending_orders(request):
             delivery_fee = calculate_delivery_fee(order_total)
             total_with_delivery = order_total + delivery_fee
 
+            # Get order items with calculated total price
+            order_items = []
+            for item in order.orderitem_set.all():
+                item_total = item.quantity * item.product.price
+                order_items.append({
+                    'product_name': item.product.name,
+                    'quantity': item.quantity,
+                    'price': item.product.price,
+                    'item_total': item_total
+                })
+
             order_info = {
                 'transaction_id': order_payment.transaction_id,
                 'username': order.user.username,
@@ -275,13 +288,16 @@ def pending_orders(request):
                 'payment_status': order_payment.payment_status,
                 'date_ordered': order.order_date,
                 'payment_id': order_payment.id,
+                'order_items': order_items,
             }
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/pending-orders.html', {'order_list': order_list})
 
+@login_required
 def approved_orders(request):
     orders = Order.objects.filter(is_completed=True)
     order_list = []
+    
     for order in orders:
         order_payment = OrderPayment.objects.filter(order=order, payment_status='approved').first()
         if order_payment:
@@ -299,6 +315,17 @@ def approved_orders(request):
             delivery_fee = calculate_delivery_fee(order_total)
             total_with_delivery = order_total + delivery_fee
 
+            # Get order items with calculated total price
+            order_items = []
+            for item in order.orderitem_set.all():
+                item_total = item.quantity * item.product.price
+                order_items.append({
+                    'product_name': item.product.name,
+                    'quantity': item.quantity,
+                    'price': item.product.price,
+                    'item_total': item_total
+                })
+
             order_info = {
                 'transaction_id': order_payment.transaction_id,
                 'username': order.user.username,
@@ -307,9 +334,11 @@ def approved_orders(request):
                 'payment_status': order_payment.payment_status,
                 'date_ordered': order.order_date,
                 'payment_id': order_payment.id,
+                'order_items': order_items,
             }
             order_list.append(order_info)
     return render(request, 'finance_manager/pages/approved-orders.html', {'order_list': order_list})
+
 
 def order_rejected_payment(request):
     orders = Order.objects.filter(is_completed=True)

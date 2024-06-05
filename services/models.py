@@ -22,8 +22,8 @@ class Service(models.Model):
     name = models.ForeignKey(ServiceCategory, on_delete=models.CASCADE, null = True)
     image = models.ImageField(null=False)
     description = models.TextField()
-    # created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')
-    
+    tools_required = models.TextField(null=True, blank=True) 
+   
     class Meta:
         managed = True
         verbose_name = 'Service'
@@ -33,7 +33,7 @@ class Service(models.Model):
     def __str__(self):
         return self.name.name
 
-# services booked
+# services bookedclass ServiceBooking(models.Model):
 class ServiceBooking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
@@ -46,16 +46,19 @@ class ServiceBooking(models.Model):
         # Add more towns as needed
     ]
     location = models.CharField(max_length=50, choices=LOCATION_CHOICES)
-
     booking_date = models.DateField()
-    
+    tools_required = models.TextField(null=True, blank=True)
+    service_delivered = models.BooleanField(default=False)
+    customer_feedback = models.TextField(null=True, blank=True)
+    customer_approval = models.BooleanField(null=True, blank=True)
+
     class Meta:
         verbose_name = 'Service Booking'
         verbose_name_plural = 'Service Bookings'
 
     def __str__(self):
         return f"Booking #{self.pk} - {self.service}"
-    
+
 # assigned bookings
 
 class InstallerAssignment(models.Model):

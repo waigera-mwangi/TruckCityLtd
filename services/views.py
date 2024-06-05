@@ -57,6 +57,7 @@ class BookServiceView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.service_id = self.kwargs['service_id']
+        form.instance.tools_required = form.instance.service.tools_required  # Autofill tools_required
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -147,17 +148,27 @@ def service_booking_pdf(request, booking_id):
     return HttpResponse('Error generating PDF!')
 
 
+@login_required
 def track_progress(request, booking_id):
-    # Get the ServiceBooking object or return a 404 error if not found
-    
     booking = get_object_or_404(ServiceBooking, pk=booking_id)
-
-    # Get the related MachineinstallerAssignment or return None if not found
     assignment = booking.installer_assignment if hasattr(booking, 'installer_assignment') else None
+
+    if request.method == 'POST':
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            booking.service_delivered = True
+            booking.customer_approval = form.cleaned_data['customer_approval']
+            booking.customer_feedback = form.cleaned_data['customer_feedback']
+            booking.save()
+            messages.success(request, 'Your feedback has been submitted.')
+            return redirect('services:track_progress', booking_id=booking.id)
+    else:
+        form = FeedbackForm()
 
     context = {
         'booking': booking,
         'assignment': assignment,
+        'form': form,
     }
 
     return render(request, 'services/track_progress.html', context)
@@ -283,6 +294,7 @@ def installer_list(request):
 
     # Replace 'error_page' with the desired URL or view name for handling non-installer users
     return redirect('services:installer_list')
+
 @login_required
 def request_tools(request, booking_id):
     booking = get_object_or_404(ServiceBooking, id=booking_id, installer_assignment__installer=request.user)
@@ -297,8 +309,7 @@ def request_tools(request, booking_id):
     else:
         form = ToolRequestForm()
 
-    return render(request, 'installer/pages/request_tools.html', {'form': form, 'booking': booking})
-
+    return render(request, 'installer/pages/request_tools.html', {'form': form, 'booking': booking, 'tools_required': booking.tools_required})
 
 @login_required
 def installer_completed_list(request):
@@ -372,4 +383,19 @@ def provide_tools(request, assignment_id):
     else:
         form = ToolAssignmentForm()
 
-    return render(request, 'service_provider/pages/provide_tools.html', {'form': form, 'assignment': assignment})
+    return render(request, 'service_provider/pages/provide_tools.html', {'form': form, 'assignment': assignment, 'tools_required': assignment.booking.tools_required})
+
+
+@login_required
+def provided_tools(request):
+    if request.user.user_type != User.UserTypes.SERVICE_PROVIDER:
+        return HttpResponse("Unauthorized", status=403)
+
+    # Fetch all assignments where tools have been provided
+    provided_tools_list = InstallerAssignment.objects.filter(tools_provided=True).select_related('booking__service', 'installer')
+
+    context = {
+        'provided_tools_list': provided_tools_list,
+    }
+
+    return render(request, 'service_provider/pages/provided_tools.html', context)

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model, logout
 from django.forms import forms, ModelForm
 from django import forms
 from accounts.models import *
-
+from .models import *
 User = get_user_model()
 
 # customer feedback form
@@ -110,3 +110,9 @@ class DriverFeedbackForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['receiver'].queryset = User.objects.filter(user_type__in=[User.UserTypes.CUSTOMER,
                                                                                   User.UserTypes.SERVICE_PROVIDER])
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['email', 'phone_number', 'message']

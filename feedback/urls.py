@@ -38,5 +38,9 @@ urlpatterns = [
     path('feedback/supplier/send/', supplier_send_feedback_view, name='supplier_send_feedback'),
     path('feedback/service/send/', service_send_feedback_view, name='service_send_feedback'),
     path('feedback/driver/send/', driver_send_feedback_view, name='driver_send_feedback'),
+    
+    # contact us
+    path('contact/', contact_us, name='contact_us'),
+    path('contact_success/', contact_success, name='contact_success'),  # Add a view for success page
 
 ]

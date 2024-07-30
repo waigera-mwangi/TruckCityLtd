@@ -39,4 +39,11 @@ class Feedback(models.Model):
         verbose_name = 'Feedback'
         verbose_name_plural = 'Feedbacks'
         
-    
+
+class Contact(models.Model):
+    email = models.EmailField()
+    phone_number = models.CharField(max_length=15)
+    message = models.TextField()
+
+    def __str__(self):
+        return self.email

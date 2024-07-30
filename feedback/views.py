@@ -247,3 +247,19 @@ def driver_send_feedback_view(request):
 
 def about_us(request):
     return render(request, 'customer/pages/about-us.html')
+
+# contact us
+def contact_us(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('feedback:contact_success')  # Redirect to a success page
+    else:
+        form = ContactForm()
+
+    return render(request, 'feedback/send_feedback/contact_us.html', {'form': form})
+
+
+def contact_success(request):
+    return render(request, 'feedback/send_feedback/contact_success.html')

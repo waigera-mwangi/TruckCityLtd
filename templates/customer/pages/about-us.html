@@ -11,26 +11,14 @@
 {% endblock styles %}
 
 <div class="container-fluid mt-3">
-
-    <h2 style = "text-align:center;">About Us</h2>
-
-    <p class="about-text">We are wood dealers.</p>
-    <div class="location-info">
-        <p class="location-address">We are Located at;</p>
-        <p class="centered-note">
-            Staware Exhibition, Opposite Post Office,<br>
-            Ronald Ngala Street, Eldoret, Kenya.<br>
-            +254714966780<br>
-            sales@truckcityltd.co.ke<br>
-            www.truckcityltd.co.ke
-        </p>
-    </div>
-
+    <h2 class="text-center">About Us</h2>
+    <p class="about-text">Trucks City Limited is a leading engineering and manufacturing company that specializes in wood preservation, concrete pole manufacturing, composite poles manufacturing, transportation, and renewable energy. We fulfill orders aided by a team of highly experienced professionals in our company, we strive to bring lasting value to our customers by providing top-notch services and products.</p>
+    <p class="about-text">We have our own afforestation through agroforestry program that aims at helping the environment through the planting of trees. We believe in creating a better world through sustainable business practices and green initiatives. This commitment has been the driving force behind our success story over the years.</p>
 </div>
 
 <style>
     /* General styles */
-    p {
+    .about-text {
         font-size: 18px;
         line-height: 1.5;
         margin: 10px 0;
@@ -45,12 +33,21 @@
 
     /* Responsive styles for mobile web view */
     @media (max-width: 576px) {
-        p {
+        .about-text {
             font-size: 16px;
+            margin: 8px 0;
         }
 
         .centered-note {
             font-size: 18px;
+        }
+
+        .container-fluid {
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 24px;
         }
     }
 </style>

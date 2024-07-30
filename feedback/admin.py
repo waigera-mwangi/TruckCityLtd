@@ -19,3 +19,11 @@ class FeedbackAdmin(ExportCsvMixin, ModelAdmin):
     list_display_links = ['sender']
     search_help_text = 'Search by Sender'
     list_filter = ('sender','receiver')
+    
+
+@admin.register(Contact)
+class FeedbackAdmin(ExportCsvMixin, ModelAdmin):
+    search_fields = ['email', 'message']
+    list_display = ['email','phone_number','message']
+    list_display_links = ['email']
+    

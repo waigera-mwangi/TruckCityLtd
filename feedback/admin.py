@@ -23,7 +23,7 @@ class FeedbackAdmin(ExportCsvMixin, ModelAdmin):
 
 @admin.register(Contact)
 class FeedbackAdmin(ExportCsvMixin, ModelAdmin):
-    search_fields = ['email']
+    search_fields = ['email', 'message']
     list_display = ['email','phone_number','message']
     list_display_links = ['email']
     

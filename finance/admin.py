@@ -52,6 +52,7 @@ def export_to_pdf_booking_payments(modeladmin, request, queryset):
     p.save()
     return response
 
+
 def export_to_pdf_tender_payments(modeladmin, request, queryset):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=tender_payments.pdf'
@@ -62,16 +63,23 @@ def export_to_pdf_tender_payments(modeladmin, request, queryset):
     p.setFont("Helvetica-Bold", 14)
     p.drawString(100, height - 60, "Tender Payments Report")
     p.setFont("Helvetica-Bold", 12)
+    
     y = height - 80
+    x_positions = [50, 100, 280, 400, 480]  # Adjusted positions for each column
     headers = ['ID', 'Supply Tender', 'Payment Date', 'Paid To', 'Amount']
+    
     for i, header in enumerate(headers):
-        p.drawString(50 + i * 100, y, header)
+        p.drawString(x_positions[i], y, header)
+    
     p.setFont("Helvetica", 10)
+    y -= 20
+    
     for obj in queryset:
-        y -= 20
         row = [str(obj.id), str(obj.supply_tender), str(obj.payment_date), obj.paid_to.username, str(obj.amount)]
         for i, value in enumerate(row):
-            p.drawString(50 + i * 100, y, value)
+            p.drawString(x_positions[i], y, value)
+        y -= 20
+    
     p.showPage()
     p.save()
     return response
